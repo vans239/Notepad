@@ -6,10 +6,9 @@ import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
 import notepad.controller.adapter.Type;
-import notepad.controller.event.ChangeEvent;
+import notepad.controller.event.ChangeTextEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.controller.event.PatchEvent;
-import notepad.text.ChangeTextEvent;
 import notepad.text.TextModel;
 import org.apache.log4j.Logger;
 
@@ -30,8 +29,8 @@ public class UndoListener implements ControllerListener {
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event)
             throws NotepadException {
-        if (event instanceof ChangeEvent) {
-            ChangeEvent ce = (ChangeEvent) event;
+        if (event instanceof ChangeTextEvent) {
+            ChangeTextEvent ce = (ChangeTextEvent) event;
             if(!isReverted){
                 undoManager.add(ce.getChangeTextEvent());
             }
@@ -43,7 +42,7 @@ public class UndoListener implements ControllerListener {
             if(keyboardEvent.getType() != Type.PRESSED){
                 return;
             }
-            ChangeTextEvent cte = null;
+            notepad.text.ChangeTextEvent cte = null;
             PatchEvent.PatchType patchType = null;
             if (ke.isControlDown() && ke.getKeyCode() == KeyEvent.VK_Z) {
                 cte = undoManager.undo();

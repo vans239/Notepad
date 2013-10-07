@@ -8,7 +8,6 @@ import notepad.controller.event.CaretEvent;
 import notepad.text.TextModel;
 import notepad.view.NotepadView;
 import org.apache.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Evgeny Vanslov

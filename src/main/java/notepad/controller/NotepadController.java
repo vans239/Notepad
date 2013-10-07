@@ -37,9 +37,9 @@ public class NotepadController {
     }
 
     public void fireControllerEvent(final ControllerEvent event) {
-        if (!(event instanceof KeyboardEvent) && !(event instanceof MouseEvent)) {
+//        if (!(event instanceof KeyboardEvent) && !(event instanceof MouseEvent)) {
             log.info(event.toString());
-        }
+//        }
         final TextModel currTextModel = textModel;
         for (final ControllerListener listener : listeners) {
             try {

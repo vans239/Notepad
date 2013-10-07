@@ -2,6 +2,7 @@ package notepad.view;
 
 import notepad.NotepadException;
 import notepad.controller.NotepadController;
+import notepad.controller.event.CaretEvent;
 import notepad.utils.Segment;
 import notepad.utils.SegmentL;
 import org.apache.log4j.Logger;
@@ -17,6 +18,7 @@ import java.awt.geom.Rectangle2D;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Evgeny Vanslov
@@ -68,10 +70,16 @@ public class NotepadView extends JPanel {
     public void updateCaretShift(final int shift) {
         final Segment segment = getAvailableCaretShift();
         if (segment.in(shift)) {
-            updateCaret2(shift);
+            caretPosition += shift;
         } else {
-            final int scroll = segment.distance(shift);
-            log.info("Scroll");
+            try {
+                log.info("Scroll");
+                final SegmentL segmentL = getAvailableScrollShift();
+                final int scroll = segment.distance(shift);
+                viewPosition += segmentL.distance(getEditPosition() + scroll);
+            } catch (NotepadException e) {
+                log.error("", e);
+            }
         }
     }
 
@@ -80,15 +88,14 @@ public class NotepadView extends JPanel {
     }
 
     public void updateCaret(final ArrowType arrowType) {
-        arrowType.updateCaretInsertionIndex(new Temp());
+        int shift = arrowType.updateCaretInsertionIndex(new Temp());
+        if(shift != 0){
+            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
+        }
     }
 
     public boolean isAvailableShiftCaret(final int shift) {
         return new Segment(0, text.length()).in(caretPosition + shift);
-    }
-
-    public void updateCaret2(final int shift) {
-        caretPosition = new Segment(0, text.length()).nearest(caretPosition + shift);
     }
 
     public Segment getAvailableCaretShift() {
@@ -107,7 +114,6 @@ public class NotepadView extends JPanel {
 
         g2d.translate(drawPosX, drawPosY);
         frc = g2d.getFontRenderContext();
-        initLayouts();
         drawLayouts(g2d);
         drawCaret(g2d);
     }
@@ -149,29 +155,35 @@ public class NotepadView extends JPanel {
 
         String lines[] = text.split("\n");
         for (final String line : lines) {
-            if (y > height) {
-                break;
-            }
             if (line.isEmpty()) {
 //               final TextLayout layout = new TextLayout(new AttributedString("").getIterator(), frc);
 //                y += layout.getAscent() + layout.getDescent() + layout.getLeading();
 //                layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
                 continue;
             }
+
             final AttributedCharacterIterator paragraph = new AttributedString(line).getIterator();
             final LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, frc);
+
             //todo write own line measurer
             lineMeasurer.setPosition(paragraph.getBeginIndex());
+            log.info("Start");
+            int i = 0;
             while (lineMeasurer.getPosition() < paragraph.getEndIndex() && y < height) {
                 final TextLayout layout = lineMeasurer.nextLayout(breakWidth);
                 y += layout.getAscent() + layout.getDescent() + layout.getLeading();
                 layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
                 position += layout.getCharacterCount();
+                i++;
             }
+            log.info("End" + i);
+
+
             if (y > height) {
                 final TextLayoutInfo textLayoutInfo = layouts.get(layouts.size() - 1);
                 layouts.remove(layouts.size() - 1);
                 text = text.substring(0, textLayoutInfo.getPosition());
+                break;
             }
             position++;
         }
@@ -213,7 +225,7 @@ public class NotepadView extends JPanel {
 
         @Override
         public void updateCaret(int shift) {
-            updateCaret2(shift);
+            updateCaretShift(shift);
         }
 
         @Override
@@ -226,4 +238,7 @@ public class NotepadView extends JPanel {
             return NotepadView.this.layouts;
         }
     }
+
+
+
 }

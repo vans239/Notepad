@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 
+import static notepad.controller.event.CaretEvent.CaretEventType.GOTO;
 import static notepad.controller.event.FileEvent.FileStatus.*;
 
 /**
@@ -34,7 +35,7 @@ public class FileListener implements ControllerListener {
             if (ov.getFileStatus() == OPEN) {
                 final TextModel newTextModel = fileManager.open(file);
                 controller.setTextModel(newTextModel);
-                controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, 0));
+                controller.fireControllerEvent(new CaretEvent(GOTO, 0));
             } else {
                 textModel.flush(file);
             }

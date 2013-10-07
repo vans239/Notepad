@@ -1,8 +1,8 @@
 package notepad.controller.listener;
 
+import notepad.controller.event.CaretEvent;
 import notepad.view.NotepadFrame;
 import notepad.NotepadException;
-import notepad.controller.event.CaretEvent;
 import notepad.view.Mode;
 import notepad.view.NotepadView;
 import notepad.controller.ControllerEvent;
@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import java.awt.event.KeyEvent;
 
 import static notepad.controller.event.CaretEvent.CaretEventType.SHIFT;
+
 
 /**
  * Evgeny Vanslov

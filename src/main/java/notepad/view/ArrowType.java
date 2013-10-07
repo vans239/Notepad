@@ -6,43 +6,43 @@ import java.util.ArrayList;
 public enum ArrowType {
     LEFT {
         @Override
-        void updateCaretInsertionIndex(final MultiLineTextLayout mt) {
-            mt.updateCaret(-1);
+        int updateCaretInsertionIndex(final MultiLineTextLayout mt) {
+            return -1;
         }
     }, RIGHT {
         @Override
-        void updateCaretInsertionIndex(final MultiLineTextLayout mt) {
-            mt.updateCaret(1);
+        int updateCaretInsertionIndex(final MultiLineTextLayout mt) {
+            return 1;
         }
     }, DOWN {
         @Override
-        void updateCaretInsertionIndex(final MultiLineTextLayout mt) {
+        int updateCaretInsertionIndex(final MultiLineTextLayout mt) {
             ArrayList<TextLayoutInfo> layouts = mt.getLayouts();
             for (int i = 0; i < layouts.size(); ++i) {
                 TextLayoutInfo textLayoutInfo = layouts.get(i);
                 if (mt.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
                     if (i + 1 < layouts.size()) {
-                        mt.updateCaret(textLayoutInfo.getLayout().getCharacterCount());
-                        return;
+                        return textLayoutInfo.getLayout().getCharacterCount();
                     }
                 }
             }
+            return 0;
         }
     }, UP {
         @Override
-        void updateCaretInsertionIndex(final MultiLineTextLayout mt) {
+        int updateCaretInsertionIndex(final MultiLineTextLayout mt) {
             ArrayList<TextLayoutInfo> layouts = mt.getLayouts();
             for (int i = 0; i < layouts.size(); ++i) {
                 TextLayoutInfo textLayoutInfo = layouts.get(i);
                 if (mt.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
                     if (i >= 1) {
-                        mt.updateCaret(-layouts.get(i - 1).getLayout().getCharacterCount());
-                        return;
+                        return -layouts.get(i - 1).getLayout().getCharacterCount();
                     }
                 }
             }
+            return 0;
         }
     };
 
-    abstract void updateCaretInsertionIndex(final MultiLineTextLayout mt);
+    abstract int updateCaretInsertionIndex(final MultiLineTextLayout mt);
 }

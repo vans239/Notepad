@@ -1,6 +1,8 @@
 package notepad.controller.listener;
 
 import notepad.NotepadException;
+import notepad.controller.event.CaretEvent;
+import notepad.controller.event.ChangeTextEvent;
 import notepad.view.NotepadView;
 import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
@@ -22,6 +24,7 @@ public class UpdateListener implements ControllerListener {
 
     @Override
     public void actionPerformed(final NotepadController controller, final TextModel textModel, final ControllerEvent event) throws NotepadException {
-        notepadView.update();
+        if(event instanceof CaretEvent || event instanceof ChangeTextEvent)
+            notepadView.update();
     }
 }

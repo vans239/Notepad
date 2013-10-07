@@ -1,7 +1,6 @@
 package notepad.controller;
 
-import notepad.controller.event.ChangeEvent;
-import notepad.text.ChangeTextEvent;
+import notepad.controller.event.ChangeTextEvent;
 import notepad.text.ChangeTextListener;
 import org.apache.log4j.Logger;
 
@@ -18,7 +17,7 @@ public class ControllerTextListener implements ChangeTextListener {
     }
 
     @Override
-    public void actionPerformed(ChangeTextEvent event) {
-        controller.fireControllerEvent(new ChangeEvent(event));
+    public void actionPerformed(notepad.text.ChangeTextEvent event) {
+        controller.fireControllerEvent(new ChangeTextEvent(event));
     }
 }

@@ -80,7 +80,6 @@ public class NotepadView extends JPanel {
             caretPosition += shift;
         } else {
             try {
-                log.info("Scroll");
                 final SegmentL segmentL = getAvailableScrollShift();
                 viewPosition += segmentL.nearest(shift);
             } catch (NotepadException e) {

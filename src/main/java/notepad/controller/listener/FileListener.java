@@ -4,6 +4,7 @@ import notepad.NotepadException;
 import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
+import notepad.controller.event.CaretEvent;
 import notepad.controller.event.FileEvent;
 import notepad.manager.FileManager;
 import notepad.text.TextModel;
@@ -33,9 +34,11 @@ public class FileListener implements ControllerListener {
             if (ov.getFileStatus() == OPEN) {
                 final TextModel newTextModel = fileManager.open(file);
                 controller.setTextModel(newTextModel);
+                controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, 0));
             } else {
                 textModel.flush(file);
             }
         }
     }
+
 }

@@ -22,6 +22,6 @@ public class UpdateListener implements ControllerListener {
 
     @Override
     public void actionPerformed(final NotepadController controller, final TextModel textModel, final ControllerEvent event) throws NotepadException {
-        notepadView.repaint();
+        notepadView.update();
     }
 }

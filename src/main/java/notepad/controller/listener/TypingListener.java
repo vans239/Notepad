@@ -1,6 +1,6 @@
 package notepad.controller.listener;
 
-import notepad.Notepad;
+import notepad.view.NotepadFrame;
 import notepad.NotepadException;
 import notepad.controller.event.CaretEvent;
 import notepad.view.Mode;
@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 
 import java.awt.event.KeyEvent;
 
+import static notepad.controller.event.CaretEvent.CaretEventType.SHIFT;
+
 /**
  * Evgeny Vanslov
  * vans239@gmail.com
@@ -22,9 +24,9 @@ import java.awt.event.KeyEvent;
 public class TypingListener implements ControllerListener {
     private static final Logger log = Logger.getLogger(TypingListener.class);
     private NotepadView view;
-    private Notepad notepad;
+    private NotepadFrame notepad;
 
-    public TypingListener(final NotepadView view, final Notepad notepad) {
+    public TypingListener(final NotepadView view, final NotepadFrame notepad) {
         this.view = view;
         this.notepad = notepad;
     }
@@ -41,13 +43,13 @@ public class TypingListener implements ControllerListener {
                     } else {
                         textModel.replace(view.getEditPosition(), Character.toString(keyChar));
                     }
-                    controller.fireControllerEvent(new CaretEvent(1));
+                    controller.fireControllerEvent(new CaretEvent(SHIFT, 1));
                 }
             }
             if (ke.getType().equals(Type.PRESSED)) {
                 if (ke.getKeyEvent().getKeyCode() == KeyEvent.VK_BACK_SPACE && view.getEditPosition() > 0) {
                     textModel.remove(view.getEditPosition() - 1, 1);
-                    controller.fireControllerEvent(new CaretEvent(-1));
+                    controller.fireControllerEvent(new CaretEvent(SHIFT, -1));
                 }
             }
             if (ke.getType().equals(Type.PRESSED)) {

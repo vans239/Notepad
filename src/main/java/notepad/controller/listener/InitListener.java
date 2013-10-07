@@ -34,6 +34,7 @@ public class InitListener implements ControllerListener {
                 final File file = File.createTempFile("notepad", "init");
                 final TextModel newTextModel = fileManager.open(file);
                 controller.setTextModel(newTextModel);
+                newTextModel.insert(0, " ");    //dirty hack for initialize multiline text
             } catch (IOException e) {
                 throw new NotepadException("", e);
             }

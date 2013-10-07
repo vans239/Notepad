@@ -2,6 +2,8 @@ package notepad.view;
 
 import notepad.NotepadException;
 import notepad.controller.NotepadController;
+import notepad.utils.Segment;
+import notepad.utils.SegmentL;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -24,15 +26,19 @@ public class NotepadView extends JPanel {
     private static final Logger log = Logger.getLogger(NotepadView.class);
     private static final int DEFAULT_LENGTH = 20480;
 
+    private static final Color CARET_COLOR = Color.red;
+    private static final Color TEXT_COLOR = Color.black;
     private int maxLength = DEFAULT_LENGTH;
     private long viewPosition = 0;
     private int caretPosition = 0;
-    private String text = "";
+    private String text;
     private NotepadController controller;
-    private MultiLineTextLayout mt;
+    private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
+    private FontRenderContext frc;
 
-    public NotepadView(final NotepadController controller) {
+    public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
+        update();
     }
 
     public Dimension getPreferredSize() {
@@ -47,47 +53,66 @@ public class NotepadView extends JPanel {
         return viewPosition + caretPosition;
     }
 
+    public void updateScrollShift(final int shift) throws NotepadException {
+        viewPosition = new SegmentL(0, controller.length()).nearest(viewPosition + shift);
+    }
+
+    public boolean isAvailableShiftScroll(final int shift) throws NotepadException {
+        return new SegmentL(0, controller.length()).in(viewPosition + shift);
+    }
+
+    public SegmentL getAvailableScrollShift() throws NotepadException {
+        return new SegmentL(viewPosition, controller.length() - viewPosition);
+    }
+
+    public void updateCaretShift(final int shift) {
+        final Segment segment = getAvailableCaretShift();
+        if (segment.in(shift)) {
+            updateCaret2(shift);
+        } else {
+            final int scroll = segment.distance(shift);
+            log.info("Scroll");
+        }
+    }
+
+    public void updateCaretGoTo(final int value){
+        caretPosition = value;
+    }
+
+    public void updateCaret(final ArrowType arrowType) {
+        arrowType.updateCaretInsertionIndex(new Temp());
+    }
+
+    public boolean isAvailableShiftCaret(final int shift) {
+        return new Segment(0, text.length()).in(caretPosition + shift);
+    }
+
+    public void updateCaret2(final int shift) {
+        caretPosition = new Segment(0, text.length()).nearest(caretPosition + shift);
+    }
+
+    public Segment getAvailableCaretShift() {
+        return new Segment(-caretPosition, text.length() - caretPosition);
+    }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         setBackground(Color.white);
-        updateText();
         if (text.isEmpty()) {
             return;           //todo empty text edition
         }
-        mt = new MultiLineTextLayout(text, caretPosition, getSize());
         final Graphics2D g2d = (Graphics2D) g;
         final int drawPosX = 0;
         final int drawPosY = 0;
-        mt.draw(g2d, drawPosX, drawPosY);
+
+        g2d.translate(drawPosX, drawPosY);
+        frc = g2d.getFontRenderContext();
+        initLayouts();
+        drawLayouts(g2d);
+        drawCaret(g2d);
     }
 
-    public boolean isScrollAvailable(final int shift) throws NotepadException {
-        return viewPosition + shift < controller.length() && viewPosition + shift >= 0;
-    }
-
-    public void updateScroll(final int shift) throws NotepadException {
-        if(viewPosition + shift < 0){
-            viewPosition = 0;
-        } else if(viewPosition + shift > controller.length()){
-            viewPosition = controller.length();
-        } else {
-            viewPosition += shift;
-        }
-    }
-
-    public void updateCaret(final int shift){
-        mt.updateCaret(shift);
-        caretPosition = mt.getCaretPosition();  //todo ???
-    }
-
-    public void updateCaret(final ArrowType arrowType) {
-        arrowType.updateCaretInsertionIndex(mt);
-        caretPosition = mt.getCaretPosition(); //todo ???
-    }
-
-    public void updateCaret(final Point clicked){
-        ArrayList<TextLayoutInfo> layouts = mt.getLayouts();
+    public void updateCaret(final Point clicked) {
         TextLayoutInfo nearestLayout = layouts.get(0);
         for (final TextLayoutInfo layoutInfo : layouts) {
             if (distance(layoutInfo, clicked) < distance(nearestLayout, clicked)) {
@@ -98,16 +123,107 @@ public class NotepadView extends JPanel {
         caretPosition = nearestLayout.getPosition() + hitInfo.getInsertionIndex();
     }
 
-    private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked){
+    private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked) {
         return Math.abs(textLayoutInfo.getOrigin().y - clicked.y);
     }
 
-    private void updateText() {
-        try {
-            text = controller.get(viewPosition, Math.min((int) (controller.length() - viewPosition), maxLength));
-        } catch (NotepadException e) {
-            log.error("Can't read text from text model", e);
+    public void update() throws NotepadException {
+        updateText();
+        repaint();
+    }
+
+    private void updateText() throws NotepadException {
+        text = controller.get(viewPosition, Math.min((int) (controller.length() - viewPosition), maxLength));
+        if (frc != null) {
+            initLayouts();
         }
     }
 
+    private void initLayouts() {
+        layouts.clear();
+        int breakWidth = getSize().width;
+        int height = getSize().height;
+        int x = 0;
+        int y = 0;
+        int position = 0;
+
+        String lines[] = text.split("\n");
+        for (final String line : lines) {
+            if (y > height) {
+                break;
+            }
+            if (line.isEmpty()) {
+//               final TextLayout layout = new TextLayout(new AttributedString("").getIterator(), frc);
+//                y += layout.getAscent() + layout.getDescent() + layout.getLeading();
+//                layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
+                continue;
+            }
+            final AttributedCharacterIterator paragraph = new AttributedString(line).getIterator();
+            final LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, frc);
+            //todo write own line measurer
+            lineMeasurer.setPosition(paragraph.getBeginIndex());
+            while (lineMeasurer.getPosition() < paragraph.getEndIndex() && y < height) {
+                final TextLayout layout = lineMeasurer.nextLayout(breakWidth);
+                y += layout.getAscent() + layout.getDescent() + layout.getLeading();
+                layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
+                position += layout.getCharacterCount();
+            }
+            if (y > height) {
+                final TextLayoutInfo textLayoutInfo = layouts.get(layouts.size() - 1);
+                layouts.remove(layouts.size() - 1);
+                text = text.substring(0, textLayoutInfo.getPosition());
+            }
+            position++;
+        }
+    }
+
+    private void drawLayouts(Graphics2D g2d) {
+        for (final TextLayoutInfo layoutInfo : layouts) {
+            layoutInfo.getLayout().draw(g2d, layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
+        }
+    }
+
+    private void drawCaret(Graphics2D g2d) {
+        for (int i = 0; i < layouts.size(); ++i) {
+            final TextLayoutInfo layoutInfo = layouts.get(i);
+            if (caretInThisTextLayout(layoutInfo, i == layouts.size() - 1)) {
+                g2d.translate(layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
+                final Shape[] carets = layoutInfo.getLayout().getCaretShapes(
+                        caretPosition - layoutInfo.getPosition());
+                g2d.setColor(CARET_COLOR);
+                g2d.draw(carets[0]);
+                g2d.setColor(TEXT_COLOR);
+                g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
+            }
+        }
+    }
+
+    //todo private?
+    public boolean caretInThisTextLayout(TextLayoutInfo layoutInfo, boolean isLastLayout) {
+        int from = layoutInfo.getPosition();
+        int to = from + layoutInfo.getLayout().getCharacterCount();
+        return (caretPosition >= from && caretPosition < to)
+                || (caretPosition > from && isLastLayout);
+    }
+
+    class Temp extends MultiLineTextLayout {
+        public Temp() {
+            super(null, 0, null);
+        }
+
+        @Override
+        public void updateCaret(int shift) {
+            updateCaret2(shift);
+        }
+
+        @Override
+        public boolean caretInThisTextLayout(TextLayoutInfo layoutInfo, boolean isLastLayout) {
+            return NotepadView.this.caretInThisTextLayout(layoutInfo, isLastLayout);
+        }
+
+        @Override
+        public ArrayList<TextLayoutInfo> getLayouts() {
+            return NotepadView.this.layouts;
+        }
+    }
 }

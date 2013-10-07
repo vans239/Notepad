@@ -1,5 +1,7 @@
 package notepad.view;
 
+import notepad.utils.Segment;
+
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
@@ -28,17 +30,19 @@ public class MultiLineTextLayout {
     }
 
     public ArrayList<TextLayoutInfo> getLayouts() {
-        return layouts; //todo immutable?
+        return layouts;
     }
 
     public void updateCaret(final int shift) {
-        if (caretPosition + shift > text.length()) {
-            caretPosition = text.length();
-        } else if (caretPosition + shift < 0) {
-            caretPosition = 0;
-        } else {
-            caretPosition += shift;
-        }
+        caretPosition = new Segment(0, text.length()).nearest(caretPosition + shift);
+    }
+
+    public boolean isAvailableShiftCaret(final int shift){
+        return new Segment(0, text.length()).in(caretPosition + shift);
+    }
+
+    public Segment getAvailableCaretShift(){
+        return new Segment(-caretPosition, text.length() - caretPosition);
     }
 
     public void draw(Graphics2D g2d, final int drawPosX, final int drawPosY) {

@@ -1,29 +1,16 @@
-package notepad;
+package notepad.view;
 
 import notepad.controller.NotepadController;
-import notepad.controller.adapter.*;
-import notepad.controller.adapter.MouseAdapter;
 import notepad.controller.event.FileEvent;
-import notepad.controller.event.InitEvent;
-import notepad.controller.event.SaveEvent;
-import notepad.controller.listener.*;
-import notepad.controller.listener.MouseListener;
-import notepad.manager.FileManager;
-import notepad.manager.undo.DeleteMerger;
-import notepad.manager.undo.InsertMerger;
-import notepad.manager.UndoManager;
-import notepad.view.Mode;
-import notepad.view.NotepadView;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
-public class Notepad extends JFrame {
-    private static final Logger log = Logger.getLogger(Notepad.class);
+public class NotepadFrame extends JFrame {
+    private static final Logger log = Logger.getLogger(NotepadFrame.class);
 
     private int fileSave;
     private int fileOpen;
@@ -35,7 +22,7 @@ public class Notepad extends JFrame {
     private JMenu modeMenu = new JMenu(mode.name());
     private String currentDirectoryPath = "X:\\Dropbox\\programms\\Java\\Notepad+";
 
-    public Notepad(NotepadController controller, NotepadView notepadView) {
+    public NotepadFrame(NotepadController controller, NotepadView notepadView) {
         this.controller = controller;
 
         JMenuBar mb = new JMenuBar();
@@ -126,32 +113,5 @@ public class Notepad extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String args[]) throws IOException {
-        final FileManager fileManager = new FileManager();
-        final NotepadController controller = new NotepadController();
 
-        final UndoManager undoManager = new UndoManager();
-        undoManager.addMerger(new InsertMerger());
-        undoManager.addMerger(new DeleteMerger());
-
-        controller.addChangeTextListener(new InitListener(fileManager));
-        controller.fireControllerEvent(new InitEvent());
-
-        final NotepadView view = new NotepadView(controller);
-        final Notepad gui = new Notepad(controller, view);
-
-        KeyboardAdapter.addKeyboardListener(gui, controller);
-        MouseAdapter.addMouseListener(view, controller);
-
-        controller.addChangeTextListener(new FileListener(fileManager));
-        controller.addChangeTextListener(new MouseListener(view));
-        controller.addChangeTextListener(new ArrowListener(view));
-        controller.addChangeTextListener(new TypingListener(view, gui));
-        controller.addChangeTextListener(new CaretListener(view));
-        controller.addChangeTextListener(new PatchListener());
-        controller.addChangeTextListener(new UndoListener(undoManager));
-        controller.addChangeTextListener(new UpdateListener(view));
-
-        gui.launchFrame();
-    }
 }

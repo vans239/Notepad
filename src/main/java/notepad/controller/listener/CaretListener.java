@@ -8,6 +8,7 @@ import notepad.controller.event.CaretEvent;
 import notepad.text.TextModel;
 import notepad.view.NotepadView;
 import org.apache.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Evgeny Vanslov
@@ -25,7 +26,11 @@ public class CaretListener implements ControllerListener{
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
         if(event instanceof CaretEvent){
             CaretEvent ce = (CaretEvent) event;
-            notepadView.updateCaret(ce.getShiftCaret());
+            if(ce.getType() == CaretEvent.CaretEventType.SHIFT){
+                notepadView.updateCaretShift(ce.getValue());
+            }   else {
+                notepadView.updateCaretGoTo(0);
+            }
         }
     }
 }

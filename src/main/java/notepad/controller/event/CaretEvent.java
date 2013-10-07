@@ -9,20 +9,30 @@ import org.apache.log4j.Logger;
  */
 public class CaretEvent implements ControllerEvent {
     private static final Logger log = Logger.getLogger(CaretEvent.class);
-    private int shiftCaret;
+    private int value;
+    private CaretEventType type;
 
-    public CaretEvent(int shiftCaret) {
-        this.shiftCaret = shiftCaret;
+    public CaretEvent(CaretEventType type, int value) {
+        this.type = type;
+        this.value = value;
     }
 
-    public int getShiftCaret() {
-        return shiftCaret;
+    public int getValue() {
+        return value;
+    }
+
+    public CaretEventType getType() {
+        return type;
     }
 
     @Override
     public String toString() {
         return "CaretEvent{" +
-                "shiftCaret=" + shiftCaret +
+                "value=" + value +
                 '}';
+    }
+
+    public static enum CaretEventType {
+        GOTO, SHIFT
     }
 }

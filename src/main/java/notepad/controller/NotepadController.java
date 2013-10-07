@@ -2,6 +2,7 @@ package notepad.controller;
 
 import notepad.NotepadException;
 import notepad.controller.event.KeyboardEvent;
+import notepad.controller.event.MouseEvent;
 import notepad.text.TextModel;
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,7 @@ public class NotepadController {
     }
 
     public void fireControllerEvent(final ControllerEvent event) {
-        if (!(event instanceof KeyboardEvent)) {
+        if (!(event instanceof KeyboardEvent) && !(event instanceof MouseEvent)) {
             log.info(event.toString());
         }
         final TextModel currTextModel = textModel;

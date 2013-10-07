@@ -125,20 +125,8 @@ public class NotepadView extends JPanel {
         drawCaret(g2d);
     }
 
-    public void updateCaret(final Point clicked) {
-        TextLayoutInfo nearestLayout = layouts.get(0);
-        for (final TextLayoutInfo layoutInfo : layouts) {
-            if (distance(layoutInfo, clicked) < distance(nearestLayout, clicked)) {
-                nearestLayout = layoutInfo;
-            }
-        }
-        final TextHitInfo hitInfo = nearestLayout.getLayout().hitTestChar(clicked.x, clicked.y);
-        caretPosition = nearestLayout.getPosition() + hitInfo.getInsertionIndex();
-    }
 
-    private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked) {
-        return Math.abs(textLayoutInfo.getOrigin().y - clicked.y);
-    }
+
 
     public void update() {
         try {
@@ -181,7 +169,7 @@ public class NotepadView extends JPanel {
 
             //todo write own line measurer
             lineMeasurer.setPosition(paragraph.getBeginIndex());
-//            log.info("Start");
+            log.info("StartMeasurer");
             int i = 0;
             while (lineMeasurer.getPosition() < paragraph.getEndIndex() && y < height) {
                 final TextLayout layout = lineMeasurer.nextLayout(breakWidth);
@@ -190,7 +178,7 @@ public class NotepadView extends JPanel {
                 position += layout.getCharacterCount();
                 i++;
             }
-//            log.info("End" + i);
+            log.info("EndMeasurer" + i);
 
 
             if (y > height) {

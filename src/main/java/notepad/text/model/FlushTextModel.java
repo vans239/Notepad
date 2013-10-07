@@ -48,7 +48,7 @@ public class FlushTextModel extends AbstractTextModel{
         byte[] bytes = new byte[length];
         try {
             raf.seek(pos);
-            err = raf.read(bytes, 0, length);
+            err = raf.read(bytes);
         } catch (IOException e) {
             throw new NotepadException("There are no enough data");
         }

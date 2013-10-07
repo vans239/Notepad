@@ -37,7 +37,7 @@ public class FileListener implements ControllerListener {
                 controller.setTextModel(newTextModel);
                 controller.fireControllerEvent(new CaretEvent(GOTO, 0));
             } else {
-                textModel.flush(file);
+                fileManager.save(textModel, file);
             }
         }
     }

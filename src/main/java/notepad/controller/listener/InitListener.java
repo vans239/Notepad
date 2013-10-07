@@ -19,6 +19,7 @@ import java.io.RandomAccessFile;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
+
 public class InitListener implements ControllerListener {
     private static final Logger log = Logger.getLogger(InitListener.class);
     private FileManager fileManager;

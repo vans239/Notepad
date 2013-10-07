@@ -45,4 +45,8 @@ public class SegmentL {
         }
         return 0;
     }
+
+    public boolean in(SegmentL that){
+        return in(that.start) && in(that.end);
+    }
 }

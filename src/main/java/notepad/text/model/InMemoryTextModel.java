@@ -1,12 +1,10 @@
 package notepad.text.model;
 
 import notepad.NotepadException;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  * Evgeny Vanslov
@@ -40,12 +38,9 @@ public class InMemoryTextModel extends AbstractTextModel{
     @Override
     public void flush(final File file) throws NotepadException {
         try {
-            byte bytes[] = sb.toString().getBytes();
-            final RandomAccessFile raf;
-            raf = new RandomAccessFile(file, "rw");
-            raf.setLength(bytes.length);
-            raf.seek(0l);
-            raf.write(bytes);
+            PrintWriter pw = new PrintWriter(file);
+            IOUtils.write(sb.toString(), pw);
+            pw.close();
         } catch (IOException e) {
             throw new NotepadException("", e);
         }

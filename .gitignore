@@ -1,0 +1,40 @@
+
+.idea/workspace.xml
+out
+build
+a.txt
+big.txt
+target
+
+# Idea system files #
+*.iws
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Original file versions #
+*.orig
+
+# Packages #
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
+
+# Logs#
+*.log
+
+# OS generated files #
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db

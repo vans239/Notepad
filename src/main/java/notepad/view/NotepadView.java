@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextHitInfo;
@@ -41,6 +43,11 @@ public class NotepadView extends JPanel {
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
         update();
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                update();
+            }
+        });
     }
 
     public Dimension getPreferredSize() {
@@ -64,7 +71,7 @@ public class NotepadView extends JPanel {
     }
 
     public SegmentL getAvailableScrollShift() throws NotepadException {
-        return new SegmentL(viewPosition, controller.length() - viewPosition);
+        return new SegmentL(-viewPosition, controller.length() - viewPosition);
     }
 
     public void updateCaretShift(final int shift) {
@@ -75,23 +82,19 @@ public class NotepadView extends JPanel {
             try {
                 log.info("Scroll");
                 final SegmentL segmentL = getAvailableScrollShift();
-                final int scroll = segment.distance(shift);
-                viewPosition += segmentL.distance(getEditPosition() + scroll);
+                viewPosition += segmentL.nearest(shift);
             } catch (NotepadException e) {
                 log.error("", e);
             }
         }
     }
 
-    public void updateCaretGoTo(final int value){
+    public void updateCaretGoTo(final int value) {
         caretPosition = value;
     }
 
-    public void updateCaret(final ArrowType arrowType) {
-        int shift = arrowType.updateCaretInsertionIndex(new Temp());
-        if(shift != 0){
-            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
-        }
+    public ArrayList<TextLayoutInfo> getLayouts() {
+        return layouts;
     }
 
     public boolean isAvailableShiftCaret(final int shift) {
@@ -113,7 +116,12 @@ public class NotepadView extends JPanel {
         final int drawPosY = 0;
 
         g2d.translate(drawPosX, drawPosY);
-        frc = g2d.getFontRenderContext();
+        if (frc == null) {
+            frc = g2d.getFontRenderContext();
+            initLayouts();
+        } else {
+            frc = g2d.getFontRenderContext();
+        }
         drawLayouts(g2d);
         drawCaret(g2d);
     }
@@ -133,13 +141,20 @@ public class NotepadView extends JPanel {
         return Math.abs(textLayoutInfo.getOrigin().y - clicked.y);
     }
 
-    public void update() throws NotepadException {
-        updateText();
+    public void update() {
+        try {
+            updateText();
+        } catch (NotepadException e) {
+            log.error("", e);
+        }
         repaint();
     }
 
     private void updateText() throws NotepadException {
         text = controller.get(viewPosition, Math.min((int) (controller.length() - viewPosition), maxLength));
+        if (caretPosition > text.length()) {
+            caretPosition = text.length();
+        }
         if (frc != null) {
             initLayouts();
         }
@@ -167,7 +182,7 @@ public class NotepadView extends JPanel {
 
             //todo write own line measurer
             lineMeasurer.setPosition(paragraph.getBeginIndex());
-            log.info("Start");
+//            log.info("Start");
             int i = 0;
             while (lineMeasurer.getPosition() < paragraph.getEndIndex() && y < height) {
                 final TextLayout layout = lineMeasurer.nextLayout(breakWidth);
@@ -176,7 +191,7 @@ public class NotepadView extends JPanel {
                 position += layout.getCharacterCount();
                 i++;
             }
-            log.info("End" + i);
+//            log.info("End" + i);
 
 
             if (y > height) {
@@ -217,28 +232,4 @@ public class NotepadView extends JPanel {
         return (caretPosition >= from && caretPosition < to)
                 || (caretPosition > from && isLastLayout);
     }
-
-    class Temp extends MultiLineTextLayout {
-        public Temp() {
-            super(null, 0, null);
-        }
-
-        @Override
-        public void updateCaret(int shift) {
-            updateCaretShift(shift);
-        }
-
-        @Override
-        public boolean caretInThisTextLayout(TextLayoutInfo layoutInfo, boolean isLastLayout) {
-            return NotepadView.this.caretInThisTextLayout(layoutInfo, isLastLayout);
-        }
-
-        @Override
-        public ArrayList<TextLayoutInfo> getLayouts() {
-            return NotepadView.this.layouts;
-        }
-    }
-
-
-
 }

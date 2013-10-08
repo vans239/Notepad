@@ -15,8 +15,7 @@ import java.util.Arrays;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-//ReadTextModel
-//WriteTextModel
+//todo change encoding. Now this class properly works only on 1-byte coding
 public class FlushTextModel extends AbstractTextModel{
     private static final Logger log = Logger.getLogger(FlushTextModel.class);
     private RandomAccessFile raf;

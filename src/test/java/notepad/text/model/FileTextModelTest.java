@@ -25,14 +25,22 @@ public class FileTextModelTest {
 
     @Before
     public void init() throws NotepadException, IOException {
-        File file = testFolder.newFile("temp.txt");
+        File file = testFolder.newFile("coding.txt");
 
         FileOutputStream output = new FileOutputStream(file);
-        FileInputStream input = new FileInputStream("src/test/test-data/FlushTextModel.txt");
+        FileInputStream input = new FileInputStream("src/test/test-data/FileTextModel.txt");
         IOUtils.copy(input, output);
         output.close();
         input.close();
         fileTextModel = new FlushTextModel(file);
+    }
+
+    @Test
+    public void currTest() throws NotepadException {
+        File file = new File("src/test/test-data/coding.txt");
+        FlushTextModel textModel = new FlushTextModel(file);
+        String text = textModel.get(0, (int) textModel.length());
+        Assert.assertEquals("Not one byte encoding", text.length(), textModel.length());
     }
 
     @Test
@@ -68,10 +76,6 @@ public class FileTextModelTest {
 
     @Test
     public void remove() throws NotepadException {
-        System.out.println("The most direct computation would be for the enemy to try all 2^r possible keys, one by one.".length());
-        System.out.println("In this letter I make some remarks on a general principle relevant to enciphering in general and my machine.".length());
-        System.out.println("We see immediately that one needs little information to begin to break down the process.".length());
-
         fileTextModel.remove(3, 2);
         Assert.assertEquals("Insnces", fileTextModel.get(0, (int) fileTextModel.length()));
     }

@@ -17,6 +17,7 @@ import java.util.List;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
+
 public abstract class AbstractTextModel implements TextModel {
     private static final Logger log = Logger.getLogger(AbstractTextModel.class);
 

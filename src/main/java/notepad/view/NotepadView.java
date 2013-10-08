@@ -12,10 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineBreakMeasurer;
-import java.awt.font.TextHitInfo;
-import java.awt.font.TextLayout;
+import java.awt.font.*;
 import java.awt.geom.Rectangle2D;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
@@ -29,16 +26,18 @@ import java.util.Date;
 public class NotepadView extends JPanel {
     private static final Logger log = Logger.getLogger(NotepadView.class);
     private static final int DEFAULT_LENGTH = 20480;
-
+    private static final Font font = new Font("Monospaced", Font.PLAIN, 12);
     private static final Color CARET_COLOR = Color.red;
     private static final Color TEXT_COLOR = Color.black;
+
     private int maxLength = DEFAULT_LENGTH;
     private long viewPosition = 0;
     private int caretPosition = 0;
     private String text;
     private NotepadController controller;
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
-    private FontRenderContext frc;
+    private FontRenderContext frc = getFontMetrics(font).getFontRenderContext();
+
 
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
@@ -115,17 +114,9 @@ public class NotepadView extends JPanel {
         final int drawPosY = 0;
 
         g2d.translate(drawPosX, drawPosY);
-        if (frc == null) {
-            frc = g2d.getFontRenderContext();
-            initLayouts();
-        } else {
-            frc = g2d.getFontRenderContext();
-        }
         drawLayouts(g2d);
         drawCaret(g2d);
     }
-
-
 
 
     public void update() {
@@ -142,9 +133,7 @@ public class NotepadView extends JPanel {
         if (caretPosition > text.length()) {
             caretPosition = text.length();
         }
-        if (frc != null) {
-            initLayouts();
-        }
+        initLayouts();
     }
 
     private void initLayouts() {
@@ -154,7 +143,6 @@ public class NotepadView extends JPanel {
         int x = 0;
         int y = 0;
         int position = 0;
-
         String lines[] = text.split("\n");
         for (final String line : lines) {
             if (line.isEmpty()) {
@@ -164,12 +152,14 @@ public class NotepadView extends JPanel {
                 continue;
             }
 
-            final AttributedCharacterIterator paragraph = new AttributedString(line).getIterator();
+            AttributedString attributedString = new AttributedString(line);
+            attributedString.addAttribute(TextAttribute.FONT, font);
+            final AttributedCharacterIterator paragraph = attributedString.getIterator();
             final LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, frc);
+
 
             //todo write own line measurer
             lineMeasurer.setPosition(paragraph.getBeginIndex());
-            log.info("StartMeasurer");
             int i = 0;
             while (lineMeasurer.getPosition() < paragraph.getEndIndex() && y < height) {
                 final TextLayout layout = lineMeasurer.nextLayout(breakWidth);
@@ -178,8 +168,6 @@ public class NotepadView extends JPanel {
                 position += layout.getCharacterCount();
                 i++;
             }
-            log.info("EndMeasurer" + i);
-
 
             if (y > height) {
                 final TextLayoutInfo textLayoutInfo = layouts.get(layouts.size() - 1);

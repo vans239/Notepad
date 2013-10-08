@@ -11,6 +11,7 @@ import java.io.File;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
+//todo change encoding. Now this class properly works only on 1-byte coding
 public class BufferedFlushTextModel extends AbstractTextModel {
     private static final Logger log = Logger.getLogger(BufferedFlushTextModel.class);
     private static final int BUFFER_SIZE = 20480;
@@ -76,7 +77,6 @@ public class BufferedFlushTextModel extends AbstractTextModel {
             initBuffer(segmentL);
         }
     }
-
     private void initBuffer(SegmentL segmentL) throws NotepadException {
         SegmentL fileSegment = new SegmentL(0, textModel.length());
         position = fileSegment.nearest(segmentL.getStart() - BUFFER_SIZE / 2);

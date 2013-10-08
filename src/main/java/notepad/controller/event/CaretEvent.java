@@ -1,14 +1,12 @@
 package notepad.controller.event;
 
 import notepad.controller.ControllerEvent;
-import org.apache.log4j.Logger;
 
 /**
  * Evgeny Vanslov
  * vans239@gmail.com
  */
 public class CaretEvent implements ControllerEvent {
-    private static final Logger log = Logger.getLogger(CaretEvent.class);
     private int value;
     private CaretEventType type;
 
@@ -29,6 +27,7 @@ public class CaretEvent implements ControllerEvent {
     public String toString() {
         return "CaretEvent{" +
                 "value=" + value +
+                ", type=" + type +
                 '}';
     }
 

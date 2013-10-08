@@ -1,7 +1,7 @@
 package notepad.text.event;
 
-import notepad.text.ChangeTextEvent;
 import notepad.NotepadException;
+import notepad.text.ChangeTextEvent;
 import notepad.text.TextModel;
 import org.apache.log4j.Logger;
 
@@ -19,7 +19,7 @@ public class ReplaceEvent implements ChangeTextEvent {
     public ReplaceEvent(long pos, String beforeStr, String afterString) {
         this.beforeStr = beforeStr;
         this.afterString = afterString;
-        if(beforeStr.length() != afterString.length()){
+        if (beforeStr.length() != afterString.length()) {
             throw new IllegalArgumentException("Lengths of strings should be equal for replace event");
         }
         this.pos = pos;

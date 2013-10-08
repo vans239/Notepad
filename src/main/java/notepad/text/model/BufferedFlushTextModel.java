@@ -3,7 +3,6 @@ package notepad.text.model;
 import notepad.NotepadException;
 import notepad.utils.SegmentL;
 import org.apache.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 
@@ -14,7 +13,8 @@ import java.io.File;
 //todo change encoding. Now this class properly works only on 1-byte coding
 public class BufferedFlushTextModel extends AbstractTextModel {
     private static final Logger log = Logger.getLogger(BufferedFlushTextModel.class);
-    private static final int BUFFER_SIZE = 10240;
+    private static final int BUFFER_SIZE = 30000;
+    private static int bufferSize = BUFFER_SIZE;
 
     private FlushTextModel textModel;
 
@@ -24,7 +24,7 @@ public class BufferedFlushTextModel extends AbstractTextModel {
 
     public BufferedFlushTextModel(File file) throws NotepadException {
         textModel = new FlushTextModel(file);
-        initBuffer(new SegmentL(0,0));
+        initBuffer(new SegmentL(0, 0));
     }
 
     @Override
@@ -71,22 +71,28 @@ public class BufferedFlushTextModel extends AbstractTextModel {
     }
 
     private void updateBuffer(SegmentL segmentL) throws NotepadException {
-        if(!getBufferSegment().in(segmentL)){
+        if (!getBufferSegment().in(segmentL)) {
             log.info("Buffer flushing");
             flushBuffer();
             initBuffer(segmentL);
         }
     }
+
     private void initBuffer(SegmentL segmentL) throws NotepadException {
+        long segmentLength = segmentL.getEnd() - segmentL.getStart();
+        while (segmentLength > bufferSize) {
+            bufferSize *= 2;
+        }
+        long trailingSpace = (bufferSize - segmentLength) / 2;
         SegmentL fileSegment = new SegmentL(0, textModel.length());
-        position = fileSegment.nearest(segmentL.getStart() - BUFFER_SIZE / 2);
-        int length = (int) (fileSegment.nearest(position + BUFFER_SIZE) - position);
+        position = fileSegment.nearest(segmentL.getStart() - trailingSpace);
+        int length = (int) (fileSegment.nearest(position + bufferSize) - position);
         final String s = textModel.get(position, length);
         sb = new StringBuilder(s);
         beforeEditionSize = s.length();
     }
 
-    private SegmentL getBufferSegment(){
+    private SegmentL getBufferSegment() {
         return new SegmentL(position, position + sb.length());
     }
 }

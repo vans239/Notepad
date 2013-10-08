@@ -20,11 +20,11 @@ public class DeleteMerger implements Merger {
         }
         DeleteEvent lastDE = (DeleteEvent) last;
         DeleteEvent beforeDE = (DeleteEvent) before;
-        if(isBlank(lastDE.getDeleted()) || isBlank(beforeDE.getDeleted())){
+        if (isBlank(lastDE.getDeleted()) || isBlank(beforeDE.getDeleted())) {
             return false;
         }
 
-        return lastDE.getPos()== beforeDE.getPos() || lastDE.getPos() + beforeDE.getDeleted().length() == beforeDE.getPos();
+        return lastDE.getPos() == beforeDE.getPos() || lastDE.getPos() + beforeDE.getDeleted().length() == beforeDE.getPos();
     }
 
     @Override
@@ -34,10 +34,10 @@ public class DeleteMerger implements Merger {
         }
         DeleteEvent lastDE = (DeleteEvent) last;
         DeleteEvent beforeDE = (DeleteEvent) before;
-        if(lastDE.getPos()== beforeDE.getPos()){
+        if (lastDE.getPos() == beforeDE.getPos()) {
             return new DeleteEvent(lastDE.getPos(), beforeDE.getDeleted() + lastDE.getDeleted());
         }
-        if(lastDE.getPos() + beforeDE.getDeleted().length() == beforeDE.getPos()){
+        if (lastDE.getPos() + beforeDE.getDeleted().length() == beforeDE.getPos()) {
             return new DeleteEvent(lastDE.getPos(), lastDE.getDeleted() + beforeDE.getDeleted());
         }
         throw new IllegalArgumentException();

@@ -8,5 +8,6 @@ import notepad.text.ChangeTextEvent;
  */
 public interface Merger {
     boolean isMergeable(final ChangeTextEvent last, final ChangeTextEvent before);
+
     ChangeTextEvent merge(final ChangeTextEvent last, final ChangeTextEvent before);
 }

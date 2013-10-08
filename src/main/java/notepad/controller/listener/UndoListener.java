@@ -1,14 +1,15 @@
 package notepad.controller.listener;
 
 import notepad.NotepadException;
-import notepad.manager.UndoManager;
 import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
-import notepad.controller.adapter.Type;
+import notepad.controller.adapter.KeyboardType;
+import notepad.controller.adapter.MouseType;
 import notepad.controller.event.ChangeTextEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.controller.event.PatchEvent;
+import notepad.manager.UndoManager;
 import notepad.text.TextModel;
 import org.apache.log4j.Logger;
 
@@ -22,6 +23,7 @@ public class UndoListener implements ControllerListener {
     private static final Logger log = Logger.getLogger(UndoListener.class);
     private UndoManager undoManager;
     private boolean isReverted = false;
+
     public UndoListener(UndoManager undoManager) {
         this.undoManager = undoManager;
     }
@@ -31,7 +33,7 @@ public class UndoListener implements ControllerListener {
             throws NotepadException {
         if (event instanceof ChangeTextEvent) {
             ChangeTextEvent ce = (ChangeTextEvent) event;
-            if(!isReverted){
+            if (!isReverted) {
                 undoManager.add(ce.getChangeTextEvent());
             }
             isReverted = false;
@@ -39,7 +41,7 @@ public class UndoListener implements ControllerListener {
         if (event instanceof KeyboardEvent) {
             KeyboardEvent keyboardEvent = (KeyboardEvent) event;
             KeyEvent ke = keyboardEvent.getKeyEvent();
-            if(keyboardEvent.getType() != Type.PRESSED){
+            if (keyboardEvent.getType() != KeyboardType.PRESSED) {
                 return;
             }
             notepad.text.ChangeTextEvent cte = null;
@@ -51,7 +53,7 @@ public class UndoListener implements ControllerListener {
                 cte = undoManager.redo();
                 patchType = PatchEvent.PatchType.REDO;
             }
-            if(cte != null){
+            if (cte != null) {
                 isReverted = true;
                 controller.fireControllerEvent(new PatchEvent(patchType, cte));
             }

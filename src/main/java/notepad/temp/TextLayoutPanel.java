@@ -1,24 +1,13 @@
 package notepad.temp;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class TextLayoutPanel extends JPanel {
     TextLayout layout;
@@ -129,7 +118,7 @@ public class TextLayoutPanel extends JPanel {
                 System.exit(0);
             }
         });
-        frame.add( new TextLayoutPanel());
+        frame.add(new TextLayoutPanel());
         frame.pack();
         frame.setSize(new Dimension(400, 300));
         frame.setVisible(true);

@@ -1,13 +1,14 @@
 package notepad.controller.listener;
 
 import notepad.NotepadException;
-import notepad.controller.event.CaretEvent;
-import notepad.view.NotepadView;
 import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
+import notepad.controller.event.CaretEvent;
 import notepad.controller.event.MouseEvent;
 import notepad.text.TextModel;
+import notepad.utils.Segment;
+import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;
 import org.apache.log4j.Logger;
 
@@ -15,7 +16,7 @@ import java.awt.*;
 import java.awt.font.TextHitInfo;
 import java.util.ArrayList;
 
-import static notepad.controller.adapter.Type.*;
+import static notepad.controller.adapter.MouseType.*;
 
 
 /**
@@ -31,19 +32,35 @@ public class MouseListener implements ControllerListener {
         this.view = view;
     }
 
+    int hit1 = -1;
+    int hit2;
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event)
             throws NotepadException {
         if (event instanceof MouseEvent) {
             final MouseEvent mouseEvent = (MouseEvent) event;
+
             if (mouseEvent.getType().equals(CLICKED)) {
                 log.info(mouseEvent.getEvent().getPoint());
-                updateCaret(controller, mouseEvent.getEvent().getPoint());
+                int index = getHitIndex(mouseEvent.getEvent().getPoint());
+                controller.fireControllerEvent(
+                        new CaretEvent(CaretEvent.CaretEventType.GOTO, index));
+            } else if(mouseEvent.getType().equals(PRESSED)){
+                hit1 = getHitIndex(mouseEvent.getEvent().getPoint());
+                hit2 = hit1;
+            } else {
+                if(mouseEvent.getType().equals(RELEASED)){
+                    hit2 = getHitIndex(mouseEvent.getEvent().getPoint());
+                } else if(mouseEvent.getType().equals(DRAGGED)){
+                    hit2 = getHitIndex(mouseEvent.getEvent().getPoint());
+                }
+                view.setDraggedSegment(new Segment(Math.min(hit1, hit2), Math.max(hit1,hit2)));
+                controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, hit2));
             }
         }
     }
 
-    public void updateCaret(NotepadController controller, final Point clicked) {
+    public int getHitIndex(final Point clicked) {
         ArrayList<TextLayoutInfo> layouts = view.getLayouts();
         TextLayoutInfo nearestLayout = layouts.get(0);
         for (final TextLayoutInfo layoutInfo : layouts) {
@@ -52,8 +69,8 @@ public class MouseListener implements ControllerListener {
             }
         }
         final TextHitInfo hitInfo = nearestLayout.getLayout().hitTestChar(clicked.x, clicked.y);
-        controller.fireControllerEvent(
-                new CaretEvent(CaretEvent.CaretEventType.GOTO, nearestLayout.getPosition() + hitInfo.getInsertionIndex()));
+        return nearestLayout.getPosition() + hitInfo.getInsertionIndex();
+
     }
 
     private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked) {

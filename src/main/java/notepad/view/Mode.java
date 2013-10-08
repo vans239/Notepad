@@ -1,7 +1,5 @@
 package notepad.view;
 
-import org.apache.log4j.Logger;
-
 /**
  * Evgeny Vanslov
  * vans239@gmail.com
@@ -18,5 +16,6 @@ public enum Mode {
             return REPLACE;
         }
     };
+
     public abstract Mode swap();
 }

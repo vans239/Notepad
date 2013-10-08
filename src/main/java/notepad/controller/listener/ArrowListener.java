@@ -1,14 +1,15 @@
 package notepad.controller.listener;
 
 import notepad.NotepadException;
-import notepad.controller.event.CaretEvent;
-import notepad.view.NotepadView;
 import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
-import notepad.controller.adapter.Type;
+import notepad.controller.adapter.KeyboardType;
+import notepad.controller.adapter.MouseType;
+import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.text.TextModel;
+import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,7 @@ public class ArrowListener implements ControllerListener {
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
         if (event instanceof KeyboardEvent) {
             final KeyboardEvent ke = (KeyboardEvent) event;
-            if (!ke.getType().equals(Type.PRESSED)) {
+            if (!ke.getType().equals(KeyboardType.PRESSED)) {
                 return;
             }
             int shift = 0;
@@ -70,7 +71,7 @@ public class ArrowListener implements ControllerListener {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
 //                if (i + 1 < layouts.size()) {
-                    return textLayoutInfo.getLayout().getCharacterCount();
+                return textLayoutInfo.getLayout().getCharacterCount();
 //                }
             }
         }

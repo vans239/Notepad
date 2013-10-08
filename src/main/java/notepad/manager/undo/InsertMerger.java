@@ -20,7 +20,7 @@ public class InsertMerger implements Merger {
         }
         InsertEvent lastIE = (InsertEvent) last;
         InsertEvent beforeIE = (InsertEvent) before;
-        if(isBlank(lastIE.getInserted()) || isBlank(beforeIE.getInserted())){
+        if (isBlank(lastIE.getInserted()) || isBlank(beforeIE.getInserted())) {
             return false;
         }
 
@@ -34,7 +34,7 @@ public class InsertMerger implements Merger {
         }
         InsertEvent lastIE = (InsertEvent) last;
         InsertEvent beforeIE = (InsertEvent) before;
-        if(lastIE.getPos() == beforeIE.getPos() + beforeIE.getInserted().length()){
+        if (lastIE.getPos() == beforeIE.getPos() + beforeIE.getInserted().length()) {
             return new InsertEvent(beforeIE.getPos(), beforeIE.getInserted() + lastIE.getInserted());
         }
         throw new IllegalArgumentException();

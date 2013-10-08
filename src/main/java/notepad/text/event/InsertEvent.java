@@ -1,7 +1,7 @@
 package notepad.text.event;
 
-import notepad.text.ChangeTextEvent;
 import notepad.NotepadException;
+import notepad.text.ChangeTextEvent;
 import notepad.text.TextModel;
 import org.apache.log4j.Logger;
 

@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class CaretListener implements ControllerListener{
+public class CaretListener implements ControllerListener {
     private static final Logger log = Logger.getLogger(CaretListener.class);
     private NotepadView notepadView;
 
@@ -23,12 +23,12 @@ public class CaretListener implements ControllerListener{
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
-        if(event instanceof CaretEvent){
+        if (event instanceof CaretEvent) {
             CaretEvent ce = (CaretEvent) event;
-            if(ce.getType() == CaretEvent.CaretEventType.SHIFT){
+            if (ce.getType() == CaretEvent.CaretEventType.SHIFT) {
                 notepadView.updateCaretShift(ce.getValue());
-            }   else {
-                notepadView.updateCaretGoTo(0);
+            } else {
+                notepadView.updateCaretGoTo(ce.getValue());
             }
         }
     }

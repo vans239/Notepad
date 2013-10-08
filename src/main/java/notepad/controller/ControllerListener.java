@@ -2,7 +2,6 @@ package notepad.controller;
 
 import notepad.NotepadException;
 import notepad.text.TextModel;
-import org.apache.log4j.Logger;
 
 /**
  * Evgeny Vanslov

@@ -6,5 +6,6 @@ package notepad.text;
  */
 public interface ChangeTextEvent {
     void apply(final TextModel textModel);
+
     void revert(final TextModel textModel);
 }

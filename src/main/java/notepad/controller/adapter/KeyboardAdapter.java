@@ -15,21 +15,21 @@ import java.awt.event.KeyListener;
 public class KeyboardAdapter {
     private static final Logger log = Logger.getLogger(KeyboardAdapter.class);
 
-    public static void addKeyboardListener(final Component component, final NotepadController controller){
+    public static void addKeyboardListener(final Component component, final NotepadController controller) {
         component.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                controller.fireControllerEvent(new KeyboardEvent(Type.TYPED, e));
+                controller.fireControllerEvent(new KeyboardEvent(KeyboardType.TYPED, e));
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-                controller.fireControllerEvent(new KeyboardEvent(Type.PRESSED, e));
+                controller.fireControllerEvent(new KeyboardEvent(KeyboardType.PRESSED, e));
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                controller.fireControllerEvent(new KeyboardEvent(Type.RELEASED, e));
+                controller.fireControllerEvent(new KeyboardEvent(KeyboardType.RELEASED, e));
             }
         });
     }

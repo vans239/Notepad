@@ -17,9 +17,9 @@ public class PatchListener implements ControllerListener {
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
-        if(event instanceof PatchEvent){
+        if (event instanceof PatchEvent) {
             PatchEvent pe = (PatchEvent) event;
-            if(pe.getPatchType() == PatchEvent.PatchType.REDO){
+            if (pe.getPatchType() == PatchEvent.PatchType.REDO) {
                 pe.getEvent().apply(textModel);
             } else {
                 pe.getEvent().revert(textModel);

@@ -1,8 +1,8 @@
 package notepad.controller.event;
 
 import notepad.controller.ControllerEvent;
-import notepad.controller.adapter.Type;
-import org.apache.log4j.Logger;
+import notepad.controller.adapter.KeyboardType;
+import notepad.controller.adapter.MouseType;
 
 import java.awt.event.KeyEvent;
 
@@ -11,17 +11,16 @@ import java.awt.event.KeyEvent;
  * vans239@gmail.com
  */
 public class KeyboardEvent implements ControllerEvent {
-    private static final Logger log = Logger.getLogger(KeyboardEvent.class);
     private KeyEvent keyEvent;
-    private Type type;
+    private KeyboardType type;
 
-    public KeyboardEvent(Type type, KeyEvent keyEvent) {
+    public KeyboardEvent(KeyboardType type, KeyEvent keyEvent) {
         this.keyEvent = keyEvent;
         this.type = type;
 
     }
 
-    public Type getType() {
+    public KeyboardType getType() {
         return type;
     }
 

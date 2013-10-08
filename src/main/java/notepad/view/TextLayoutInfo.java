@@ -1,7 +1,5 @@
 package notepad.view;
 
-import org.apache.log4j.Logger;
-
 import java.awt.*;
 import java.awt.font.TextLayout;
 

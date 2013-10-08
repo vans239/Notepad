@@ -24,23 +24,23 @@ public class Segment {
         return start;
     }
 
-    public boolean in(final int t){
+    public boolean in(final int t) {
         return t >= start && t <= end;
     }
 
-    public int nearest(final int t){
-        if(t < start){
+    public int nearest(final int t) {
+        if (t < start) {
             return start;
-        } else if(t > end){
+        } else if (t > end) {
             return end;
         }
         return t;
     }
 
-    public int distance(final int t){
-        if(t < start){
+    public int distance(final int t) {
+        if (t < start) {
             return start - t;
-        } else if(t > end){
+        } else if (t > end) {
             return end - t;
         }
         return 0;

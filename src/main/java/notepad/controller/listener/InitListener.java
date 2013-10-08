@@ -7,13 +7,10 @@ import notepad.controller.NotepadController;
 import notepad.controller.event.InitEvent;
 import notepad.manager.FileManager;
 import notepad.text.TextModel;
-import notepad.text.model.InMemoryTextModel;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 
 /**
  * Evgeny Vanslov
@@ -30,7 +27,7 @@ public class InitListener implements ControllerListener {
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
-        if(event instanceof InitEvent){
+        if (event instanceof InitEvent) {
             try {
                 final File file = File.createTempFile("notepad", "init");
                 final TextModel newTextModel = fileManager.open(file);

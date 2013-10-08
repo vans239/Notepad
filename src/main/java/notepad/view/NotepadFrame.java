@@ -5,7 +5,6 @@ import notepad.controller.event.FileEvent;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.*;
 
@@ -54,12 +53,12 @@ public class NotepadFrame extends JFrame {
         });
     }
 
-    public void swapMode(){
+    public void swapMode() {
         mode = mode.swap();
         modeMenu.setText(mode.name());
     }
 
-    public Mode getMode(){
+    public Mode getMode() {
         return mode;
     }
 

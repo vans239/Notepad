@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 
 import static notepad.controller.event.CaretEvent.CaretEventType.GOTO;
-import static notepad.controller.event.FileEvent.FileStatus.*;
+import static notepad.controller.event.FileEvent.FileStatus.OPEN;
 
 /**
  * Evgeny Vanslov

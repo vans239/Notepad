@@ -4,9 +4,9 @@ import notepad.controller.NotepadController;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
-import static notepad.controller.adapter.Type.*;
-import static notepad.controller.adapter.Type.EXITED;
+import static notepad.controller.adapter.MouseType.*;
 
 /**
  * Evgeny Vanslov
@@ -15,7 +15,7 @@ import static notepad.controller.adapter.Type.EXITED;
 public class MouseAdapter {
     private static final Logger log = Logger.getLogger(MouseAdapter.class);
 
-    public static void addMouseListener(final Component component, final NotepadController controller){
+    public static void addMouseListener(final Component component, final NotepadController controller) {
         component.addMouseListener(new java.awt.event.MouseListener() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -40,6 +40,12 @@ public class MouseAdapter {
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
                 controller.fireControllerEvent(new notepad.controller.event.MouseEvent(EXITED, e));
+            }
+        });
+        component.addMouseMotionListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+               controller.fireControllerEvent(new notepad.controller.event.MouseEvent(DRAGGED, e));
             }
         });
     }

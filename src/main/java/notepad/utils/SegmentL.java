@@ -24,29 +24,29 @@ public class SegmentL {
         return start;
     }
 
-    public boolean in(final long t){
+    public boolean in(final long t) {
         return t >= start && t <= end;
     }
 
-    public long nearest(final long t){
-        if(t < start){
+    public long nearest(final long t) {
+        if (t < start) {
             return start;
-        } else if(t > end){
+        } else if (t > end) {
             return end;
         }
         return t;
     }
 
-    public long distance(final long t){
-        if(t < start){
+    public long distance(final long t) {
+        if (t < start) {
             return start - t;
-        } else if(t > end){
+        } else if (t > end) {
             return end - t;
         }
         return 0;
     }
 
-    public boolean in(SegmentL that){
+    public boolean in(SegmentL that) {
         return in(that.start) && in(that.end);
     }
 }

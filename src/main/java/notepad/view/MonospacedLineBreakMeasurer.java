@@ -4,9 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
-import java.text.AttributedCharacterIterator;
 
 /**
  * Evgeny Vanslov
@@ -24,14 +22,14 @@ public class MonospacedLineBreakMeasurer {
         this.text = text;
         this.font = fontMetrics.getFont();
         this.frc = frc;
-        if(font == null || "Monospaced".equals(font.getFontName())){
+        if (font == null || "Monospaced".equals(font.getFontName())) {
             throw new IllegalArgumentException("Font isn't monospaced");
         }
 
         this.symbolWidth = fontMetrics.charWidth('a');
     }
 
-    void setPosition(int pos){
+    void setPosition(int pos) {
         position = pos;
     }
 
@@ -43,7 +41,7 @@ public class MonospacedLineBreakMeasurer {
         int maxSymbols = (int) (wrappingWidth / symbolWidth);
         String s = text.substring(position);
         int end;
-        //todo \n
+        //todo \r\n
         if (s.length() < maxSymbols) {
             end = s.length();
         } else {

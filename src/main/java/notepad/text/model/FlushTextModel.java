@@ -2,7 +2,6 @@ package notepad.text.model;
 
 import notepad.NotepadException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -16,7 +15,7 @@ import java.util.Arrays;
  * vans239@gmail.com
  */
 //todo change encoding. Now this class properly works only on 1-byte coding
-public class FlushTextModel extends AbstractTextModel{
+public class FlushTextModel extends AbstractTextModel {
     private static final Logger log = Logger.getLogger(FlushTextModel.class);
     private RandomAccessFile raf;
     private File file;
@@ -59,7 +58,7 @@ public class FlushTextModel extends AbstractTextModel{
 
     @Override
     public void flush(File file) throws NotepadException {
-        if(this.file.equals(file)){
+        if (this.file.equals(file)) {
             return;
         }
         try {

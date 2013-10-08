@@ -1,15 +1,14 @@
 package notepad.text.model;
 
+import notepad.NotepadException;
 import notepad.text.ChangeTextEvent;
 import notepad.text.ChangeTextListener;
-import notepad.NotepadException;
 import notepad.text.TextModel;
 import notepad.text.event.DeleteEvent;
 import notepad.text.event.InsertEvent;
 import notepad.text.event.ReplaceEvent;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +21,9 @@ public abstract class AbstractTextModel implements TextModel {
     private static final Logger log = Logger.getLogger(AbstractTextModel.class);
 
     protected abstract void _insert(long pos, String s) throws NotepadException;
+
     protected abstract void _replace(long pos, String s) throws NotepadException;
+
     protected abstract void _remove(long pos, int length) throws NotepadException;
 
     @Override
@@ -57,8 +58,8 @@ public abstract class AbstractTextModel implements TextModel {
         changeTextListeners.remove(listener);
     }
 
-    protected void notifyChangeTextListeners(final ChangeTextEvent event){
-        for(final ChangeTextListener listener : changeTextListeners){
+    protected void notifyChangeTextListeners(final ChangeTextEvent event) {
+        for (final ChangeTextListener listener : changeTextListeners) {
             listener.actionPerformed(event);
         }
     }

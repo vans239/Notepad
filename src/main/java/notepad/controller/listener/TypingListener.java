@@ -39,14 +39,15 @@ public class TypingListener implements ControllerListener {
             if (ke.getType().equals(Type.TYPED)) {
                 char keyChar = ke.getKeyEvent().getKeyChar();
                 if (keyChar != 8 && keyChar != '\u007f' && keyChar != '\u001A' && keyChar != '\u0019') {
+                    log.info("Start");
                     if(notepad.getMode() == Mode.INSERT){
-                        log.info("Start");
                         textModel.insert(view.getEditPosition(), Character.toString(keyChar));
-                        log.info("End");
                     } else {
                         textModel.replace(view.getEditPosition(), Character.toString(keyChar));
                     }
+                    log.info("Time");
                     controller.fireControllerEvent(new CaretEvent(SHIFT, 1));
+                    log.info("End");
                 }
             }
             if (ke.getType().equals(Type.PRESSED)) {

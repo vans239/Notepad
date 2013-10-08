@@ -1,13 +1,11 @@
 <component name="libraryTable">
   <library name="Maven: aopalliance:aopalliance:1.0">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ropes.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0-javadoc.jar!/" />
-    </JAVADOC>
+    <JAVADOC />
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar!/" />
+      <root url="file://$PROJECT_DIR$/lib/rope_src" />
     </SOURCES>
   </library>
 </component>

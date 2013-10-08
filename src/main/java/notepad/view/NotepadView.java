@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class NotepadView extends JPanel {
     private static final Logger log = Logger.getLogger(NotepadView.class);
-    private static final int DEFAULT_LENGTH = 20480;
+    private static final int DEFAULT_LENGTH = 10000;
     private static final Font font = new Font("Monospaced", Font.PLAIN, 12);
     private static final Color CARET_COLOR = Color.red;
     private static final Color TEXT_COLOR = Color.black;
@@ -146,27 +146,19 @@ public class NotepadView extends JPanel {
         String lines[] = text.split("\n");
         for (final String line : lines) {
             if (line.isEmpty()) {
-//               final TextLayout layout = new TextLayout(new AttributedString("").getIterator(), frc);
-//                y += layout.getAscent() + layout.getDescent() + layout.getLeading();
-//                layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
+                final TextLayout layout = new TextLayout(new AttributedString(" ").getIterator(), frc);
+                y += layout.getAscent() + layout.getDescent() + layout.getLeading();
+                layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
                 continue;
             }
-
-            AttributedString attributedString = new AttributedString(line);
-            attributedString.addAttribute(TextAttribute.FONT, font);
-            final AttributedCharacterIterator paragraph = attributedString.getIterator();
-            final LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, frc);
-
-
-            //todo write own line measurer
-            lineMeasurer.setPosition(paragraph.getBeginIndex());
-            int i = 0;
-            while (lineMeasurer.getPosition() < paragraph.getEndIndex() && y < height) {
+            final MonospacedLineBreakMeasurer lineMeasurer =
+                    new MonospacedLineBreakMeasurer(line, getFontMetrics(font), frc);
+            lineMeasurer.setPosition(0);
+            while (lineMeasurer.getPosition() < line.length() && y < height) {
                 final TextLayout layout = lineMeasurer.nextLayout(breakWidth);
                 y += layout.getAscent() + layout.getDescent() + layout.getLeading();
                 layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
                 position += layout.getCharacterCount();
-                i++;
             }
 
             if (y > height) {

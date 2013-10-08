@@ -14,7 +14,7 @@ import java.io.File;
 //todo change encoding. Now this class properly works only on 1-byte coding
 public class BufferedFlushTextModel extends AbstractTextModel {
     private static final Logger log = Logger.getLogger(BufferedFlushTextModel.class);
-    private static final int BUFFER_SIZE = 20480;
+    private static final int BUFFER_SIZE = 10240;
 
     private FlushTextModel textModel;
 

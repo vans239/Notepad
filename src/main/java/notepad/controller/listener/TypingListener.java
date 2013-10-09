@@ -9,6 +9,7 @@ import notepad.controller.adapter.MouseType;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.text.TextModel;
+import notepad.utils.Segment;
 import notepad.view.Mode;
 import notepad.view.NotepadFrame;
 import notepad.view.NotepadView;
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.event.KeyEvent;
 
+import static notepad.controller.event.CaretEvent.CaretEventType.GOTO;
 import static notepad.controller.event.CaretEvent.CaretEventType.SHIFT;
 
 
@@ -37,36 +39,108 @@ public class TypingListener implements ControllerListener {
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
         if (event instanceof KeyboardEvent) {
             final KeyboardEvent ke = (KeyboardEvent) event;
+            Handler handler;
+            if(view.isShowSelection()){
+                handler = new SelectionHandler(textModel, controller);
+            } else {
+                handler = new CaretHandler(textModel, controller);
+            }
+
             if (ke.getType().equals(KeyboardType.TYPED)) {
                 char keyChar = ke.getKeyEvent().getKeyChar();
                 if (keyChar != 8 && keyChar != '\u007f' && keyChar != '\u001A' && keyChar != '\u0019') {
-                    log.info("Start");
-                    if (notepad.getMode() == Mode.INSERT) {
-                        textModel.insert(view.getEditPosition(), Character.toString(keyChar));
-                    } else {
-                        textModel.replace(view.getEditPosition(), Character.toString(keyChar));
-                    }
-                    log.info("Time");
-                    controller.fireControllerEvent(new CaretEvent(SHIFT, 1));
-                    log.info("End");
+                    handler.typed(keyChar);
                 }
             }
-            if (ke.getType().equals(KeyboardType.PRESSED)) {
-                if (ke.getKeyEvent().getKeyCode() == KeyEvent.VK_BACK_SPACE && view.getEditPosition() > 0) {
-                    textModel.remove(view.getEditPosition() - 1, 1);
-                    controller.fireControllerEvent(new CaretEvent(SHIFT, -1));
-                }
+            if (ke.getType().equals(KeyboardType.PRESSED) && ke.getKeyEvent().getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                handler.backSpace();
             }
-            if (ke.getType().equals(KeyboardType.PRESSED)) {
-                if (ke.getKeyEvent().getKeyCode() == KeyEvent.VK_DELETE && view.getEditPosition() < textModel.length()) {
-                    textModel.remove(view.getEditPosition(), 1);
-                }
+            if (ke.getType().equals(KeyboardType.PRESSED) && ke.getKeyEvent().getKeyCode() == KeyEvent.VK_DELETE) {
+                handler.delete();
             }
-            if (ke.getType().equals(KeyboardType.RELEASED)) {
-                if (ke.getKeyEvent().getKeyCode() == KeyEvent.VK_F1) {
-                    notepad.swapMode();
-                }
+            if (ke.getType().equals(KeyboardType.RELEASED) && ke.getKeyEvent().getKeyCode() == KeyEvent.VK_F1) {
+                notepad.swapMode();
             }
+        }
+    }
+
+    interface Handler {
+        void typed(char c) throws NotepadException;
+
+        void delete() throws NotepadException;
+
+        void backSpace() throws NotepadException;
+    }
+
+    class CaretHandler implements Handler {
+        private TextModel textModel;
+        private NotepadController controller;
+
+        CaretHandler(TextModel textModel, NotepadController controller) {
+            this.textModel = textModel;
+            this.controller = controller;
+        }
+
+        @Override
+        public void typed(char keyChar) throws NotepadException {
+            if (notepad.getMode() == Mode.INSERT) {
+                textModel.insert(view.getEditPosition(), Character.toString(keyChar));
+            } else {
+                textModel.replace(view.getEditPosition(), Character.toString(keyChar));
+            }
+            controller.fireControllerEvent(new CaretEvent(SHIFT, 1));
+        }
+
+        @Override
+        public void backSpace() throws NotepadException {
+            if (view.getEditPosition() > 0) {
+                textModel.remove(view.getEditPosition() - 1, 1);
+                controller.fireControllerEvent(new CaretEvent(SHIFT, -1));
+            }
+
+        }
+
+        @Override
+        public void delete() throws NotepadException {
+            if (view.getEditPosition() < textModel.length()) {
+                textModel.remove(view.getEditPosition(), 1);
+            }
+        }
+    }
+
+    class SelectionHandler implements Handler {
+        private TextModel textModel;
+        private NotepadController controller;
+
+        SelectionHandler(TextModel textModel, NotepadController controller) {
+            this.textModel = textModel;
+            this.controller = controller;
+        }
+
+        public void end(){
+            view.showSelectionSegment(false);
+        }
+
+        @Override
+        public void typed(char c) throws NotepadException {
+            Segment segment = view.getSelectionSegment();
+            textModel.remove(segment.getStart(), segment.getEnd() - segment.getStart());
+            textModel.insert(segment.getStart(), Character.toString(c));
+            controller.fireControllerEvent(new CaretEvent(GOTO, segment.getStart() + 1));
+            end();
+        }
+
+        @Override
+        public void delete() throws NotepadException {
+            Segment segment = view.getSelectionSegment();
+            textModel.remove(segment.getStart(), segment.getEnd() - segment.getStart());
+            controller.fireControllerEvent(new CaretEvent(GOTO, segment.getStart()));
+            end();
+        }
+
+        @Override
+        public void backSpace() throws NotepadException {
+            delete();
         }
     }
 }

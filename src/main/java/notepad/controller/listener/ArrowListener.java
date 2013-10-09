@@ -5,7 +5,6 @@ import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
 import notepad.controller.adapter.KeyboardType;
-import notepad.controller.adapter.MouseType;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.text.TextModel;
@@ -52,6 +51,8 @@ public class ArrowListener implements ControllerListener {
                     break;
             }
             if (shift != 0) {
+                //todo
+                view.showSelectionSegment(false);
                 controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
             }
         }

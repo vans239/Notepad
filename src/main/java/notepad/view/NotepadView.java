@@ -28,14 +28,15 @@ public class NotepadView extends JPanel {
     private int maxLength;
     private long viewPosition = 0;
     private int caretPosition = 0;
-    private Segment draggedSegment;
+    private Segment selectionSegment;
+
+    private boolean isShowSelection = false;
 
     private String text;
-
     private NotepadController controller;
+
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
     private FontRenderContext frc = getFontMetrics(font).getFontRenderContext();
-
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
         update();
@@ -48,8 +49,20 @@ public class NotepadView extends JPanel {
         });
     }
 
-    public void setDraggedSegment(Segment draggedSegment) {
-        this.draggedSegment = draggedSegment;
+    public boolean isShowSelection() {
+        return isShowSelection;
+    }
+
+    public void updateSelectionSegment(Segment draggedSegment) {
+        this.selectionSegment = draggedSegment;
+    }
+
+    public void showSelectionSegment(boolean isShow) {
+        isShowSelection = isShow;
+    }
+
+    public Segment getSelectionSegment() {
+        return selectionSegment;
     }
 
     public void updateMaxLength() {
@@ -125,7 +138,9 @@ public class NotepadView extends JPanel {
         g2d.translate(drawPosX, drawPosY);
         drawLayouts(g2d);
         drawCaret(g2d);
-        drawDragged(g2d);
+        if (isShowSelection) {
+            drawDragged(g2d);
+        }
     }
 
 
@@ -205,11 +220,8 @@ public class NotepadView extends JPanel {
     }
 
     private void drawDragged(Graphics2D g2d) {
-        if (draggedSegment == null) {
-            return;
-        }
-        int draggedFrom = draggedSegment.getStart();
-        int draggedTo = draggedSegment.getEnd();
+        int draggedFrom = selectionSegment.getStart();
+        int draggedTo = selectionSegment.getEnd();
 
         for (int i = 0; i < layouts.size(); ++i) {
             final TextLayoutInfo layoutInfo = layouts.get(i);

@@ -8,6 +8,7 @@ import notepad.controller.adapter.KeyboardType;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.text.TextModel;
+import notepad.utils.Segment;
 import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;
 import org.apache.log4j.Logger;
@@ -28,11 +29,13 @@ public class ArrowListener implements ControllerListener {
         this.view = view;
     }
 
+    private int hit1;
+    private int hit2;
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
         if (event instanceof KeyboardEvent) {
             final KeyboardEvent ke = (KeyboardEvent) event;
-            if (!ke.getType().equals(KeyboardType.PRESSED)) {
+            if(!ke.getType().equals(KeyboardType.PRESSED)){
                 return;
             }
             int shift = 0;
@@ -50,10 +53,19 @@ public class ArrowListener implements ControllerListener {
                     shift = up();
                     break;
             }
+            if (ke.getKeyEvent().isShiftDown() && !view.isShowSelection()){
+                hit1 = view.getCaretPosition();
+            }
             if (shift != 0) {
-                //todo
-                view.showSelectionSegment(false);
-                controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
+                if (!ke.getKeyEvent().isShiftDown()) {
+                    view.showSelectionSegment(false);
+                    controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
+                } else if(ke.getKeyEvent().isShiftDown()){
+                    hit2 = view.getCaretPosition() + shift;
+                    view.updateSelectionSegment(new Segment(Math.min(hit1, hit2), Math.max(hit1, hit2)));
+                    view.showSelectionSegment(true);
+                    controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, hit2));
+                }
             }
         }
     }
@@ -71,9 +83,7 @@ public class ArrowListener implements ControllerListener {
         for (int i = 0; i < layouts.size(); ++i) {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
-//                if (i + 1 < layouts.size()) {
                 return textLayoutInfo.getLayout().getCharacterCount();
-//                }
             }
         }
         return 0;
@@ -84,10 +94,7 @@ public class ArrowListener implements ControllerListener {
         for (int i = 0; i < layouts.size(); ++i) {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
-//                if (i >= 1) {
                 return -textLayoutInfo.getLayout().getCharacterCount();
-//                return -layouts.get(i - 1).getLayout().getCharacterCount();
-//                }
             }
         }
         return 0;

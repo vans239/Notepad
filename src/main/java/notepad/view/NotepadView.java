@@ -57,6 +57,10 @@ public class NotepadView extends JPanel {
         this.selectionSegment = draggedSegment;
     }
 
+    public int getCaretPosition() {
+        return caretPosition;
+    }
+
     public void showSelectionSegment(boolean isShow) {
         isShowSelection = isShow;
     }

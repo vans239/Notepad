@@ -32,8 +32,9 @@ public class MouseListener implements ControllerListener {
         this.view = view;
     }
 
-    int hit1 = -1;
+    int hit1;
     int hit2;
+
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event)
             throws NotepadException {
@@ -46,15 +47,11 @@ public class MouseListener implements ControllerListener {
                 controller.fireControllerEvent(
                         new CaretEvent(CaretEvent.CaretEventType.GOTO, index));
                 view.showSelectionSegment(false);
-            } else if(mouseEvent.getType().equals(PRESSED)){
+            } else if (mouseEvent.getType().equals(PRESSED)) {
                 hit1 = getHitIndex(mouseEvent.getEvent().getPoint());
                 hit2 = hit1;
-            } else {
-                if(mouseEvent.getType().equals(RELEASED)){
-                    hit2 = getHitIndex(mouseEvent.getEvent().getPoint());
-                } else if(mouseEvent.getType().equals(DRAGGED)){
-                    hit2 = getHitIndex(mouseEvent.getEvent().getPoint());
-                }
+            } else if (mouseEvent.getType().equals(RELEASED) || mouseEvent.getType().equals(DRAGGED)) {
+                hit2 = getHitIndex(mouseEvent.getEvent().getPoint());
                 view.updateSelectionSegment(new Segment(Math.min(hit1, hit2), Math.max(hit1, hit2)));
                 view.showSelectionSegment(true);
                 controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, hit2));

@@ -2,6 +2,7 @@ package notepad.manager;
 
 import notepad.manager.undo.Merger;
 import notepad.text.ChangeTextEvent;
+import notepad.utils.BoundedStack;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -14,8 +15,9 @@ import java.util.Stack;
  */
 public class UndoManager {
     private static final Logger log = Logger.getLogger(UndoManager.class);
-    private final Stack<ChangeTextEvent> undos = new Stack<ChangeTextEvent>();   //todo maxCapacity
-    private final Stack<ChangeTextEvent> redos = new Stack<ChangeTextEvent>();
+    private int MAX_CAPACITY = 1024;
+    private final BoundedStack<ChangeTextEvent> undos = new BoundedStack<ChangeTextEvent>(MAX_CAPACITY);   //todo maxCapacity
+    private final BoundedStack<ChangeTextEvent> redos = new BoundedStack<ChangeTextEvent>(MAX_CAPACITY);
     private List<Merger> mergers = new ArrayList<Merger>();
 
     public void add(ChangeTextEvent event) {

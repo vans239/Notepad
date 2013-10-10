@@ -31,5 +31,6 @@ public class FileManager {
 
     public void save(final TextModel textModel, final File file) throws NotepadException {
         textModel.flush(file);
+        textModel.close();
     }
 }

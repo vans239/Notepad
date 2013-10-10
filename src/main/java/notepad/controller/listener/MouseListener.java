@@ -32,8 +32,8 @@ public class MouseListener implements ControllerListener {
         this.view = view;
     }
 
-    int hit1;
-    int hit2;
+    private int hit1;
+    private int hit2;
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event)

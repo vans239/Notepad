@@ -24,4 +24,6 @@ public interface TextModel {
     void removeChangeTextListener(ChangeTextListener listener);
 
     void flush(File file) throws NotepadException;
+
+    void close();
 }

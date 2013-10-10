@@ -2,6 +2,7 @@ package notepad.text.model;
 
 import notepad.NotepadException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -65,6 +66,15 @@ public class FlushTextModel extends AbstractTextModel {
             FileUtils.copyFile(this.file, file);
         } catch (IOException e) {
             throw new NotepadException("", e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            raf.close();
+        } catch (IOException e) {
+            log.error("Can't close file", e);
         }
     }
 

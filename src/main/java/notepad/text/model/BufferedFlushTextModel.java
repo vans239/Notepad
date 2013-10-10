@@ -36,14 +36,17 @@ public class BufferedFlushTextModel extends AbstractTextModel {
     public String get(long pos, int length) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + length));
         return sb.substring((int) (pos - position), (int) (pos - position + length));
-        //todo check length > BUFFERSIZE
-        //todo check sb.length isn't too large
     }
 
     @Override
     public void flush(File file) throws NotepadException {
         flushBuffer();
         textModel.flush(file);
+    }
+
+    @Override
+    public void close() {
+        textModel.close();
     }
 
     private void flushBuffer() throws NotepadException {

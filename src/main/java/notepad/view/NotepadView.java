@@ -40,8 +40,6 @@ public class NotepadView extends JPanel {
 
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
-        update();
-        updateMaxLength();
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 updateMaxLength();
@@ -172,7 +170,7 @@ public class NotepadView extends JPanel {
         final String lineSeparator = "\n";
         String lines[] = text.split(lineSeparator);
         for (String line : lines) {
-            if (y >= height) {
+            if (y > height) {
                 break;
             }
             line += " " ; //lineSeparator.length
@@ -191,6 +189,7 @@ public class NotepadView extends JPanel {
                 layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
                 position += layout.getCharacterCount();
             }
+            int i = 0;
         }
         if (y > height) {
             final TextLayoutInfo textLayoutInfo = layouts.get(layouts.size() - 1);

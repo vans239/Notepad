@@ -20,27 +20,19 @@ public class ReplaceEvent implements ChangeTextEvent {
         this.beforeStr = beforeStr;
         this.afterString = afterString;
         if (beforeStr.length() != afterString.length()) {
-            throw new IllegalArgumentException("Lengths of strings should be equal for replace event");
+            throw new IllegalArgumentException("Lengths of strings should be equal for replace event.May it's problem with encoding(only 1-byte)");
         }
         this.pos = pos;
     }
 
     @Override
-    public void apply(TextModel textModel) {
-        try {
-            textModel.replace(pos, afterString);
-        } catch (NotepadException e) {
-            log.error("", e);
-        }
+    public void apply(TextModel textModel) throws NotepadException {
+        textModel.replace(pos, afterString);
     }
 
     @Override
-    public void revert(TextModel textModel) {
-        try {
-            textModel.replace(pos, beforeStr);
-        } catch (NotepadException e) {
-            log.error("", e);
-        }
+    public void revert(TextModel textModel) throws NotepadException {
+        textModel.replace(pos, beforeStr);
     }
 
     @Override

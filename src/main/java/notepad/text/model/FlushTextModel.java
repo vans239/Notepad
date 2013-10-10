@@ -70,11 +70,11 @@ public class FlushTextModel extends AbstractTextModel {
     }
 
     @Override
-    public void close() {
+    public void close() throws NotepadException{
         try {
             raf.close();
         } catch (IOException e) {
-            log.error("Can't close file", e);
+           throw new NotepadException("", e);
         }
     }
 

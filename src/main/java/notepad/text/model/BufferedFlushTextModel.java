@@ -45,7 +45,7 @@ public class BufferedFlushTextModel extends AbstractTextModel {
     }
 
     @Override
-    public void close() {
+    public void close() throws NotepadException {
         textModel.close();
     }
 

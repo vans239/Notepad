@@ -25,5 +25,5 @@ public interface TextModel {
 
     void flush(File file) throws NotepadException;
 
-    void close();
+    void close() throws NotepadException;
 }

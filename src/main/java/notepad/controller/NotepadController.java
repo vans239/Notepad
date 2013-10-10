@@ -35,15 +35,14 @@ public class NotepadController {
     }
 
     public void fireControllerEvent(final ControllerEvent event) {
-//        if (!(event instanceof KeyboardEvent) && !(event instanceof MouseEvent)) {
-        log.info(event.toString());
-//        }
+        log.debug(event.toString());
         final TextModel currTextModel = textModel;
         for (final ControllerListener listener : listeners) {
             try {
                 listener.actionPerformed(this, currTextModel, event);
             } catch (NotepadException e) {
-                log.error("", e);
+                log.error("Unexpected behaviour. Program will be closed", e);
+                System.exit(0);
             }
         }
     }

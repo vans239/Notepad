@@ -20,7 +20,7 @@ public class FileManager {
         final File temp;
         try {
             temp = File.createTempFile("notepad", "open");
-            log.info(temp.getAbsolutePath());
+            log.info(String.format("Created temp file [%s] for buffering changes [%s]", temp.getAbsolutePath(), file.getPath()));
             FileUtils.copyFile(file, temp);
             temp.deleteOnExit();
             return new BufferedFlushTextModel(temp);

@@ -95,7 +95,8 @@ public class ArrowListener implements ControllerListener {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
                 if(i > 0){
-                    return -layouts.get(i - 1).getLayout().getCharacterCount();
+                    return Math.min(-layouts.get(i - 1).getLayout().getCharacterCount(),
+                            -(view.getCaretPosition() - textLayoutInfo.getPosition()));
                 }
                 return -textLayoutInfo.getLayout().getCharacterCount();
             }

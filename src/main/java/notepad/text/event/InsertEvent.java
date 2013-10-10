@@ -21,21 +21,13 @@ public class InsertEvent implements ChangeTextEvent {
     }
 
     @Override
-    public void apply(TextModel textModel) {
-        try {
-            textModel.insert(pos, inserted);
-        } catch (NotepadException e) {
-            log.error("", e);
-        }
+    public void apply(TextModel textModel) throws NotepadException {
+        textModel.insert(pos, inserted);
     }
 
     @Override
-    public void revert(TextModel textModel) {
-        try {
-            textModel.remove(pos, inserted.length());
-        } catch (NotepadException e) {
-            log.error("", e);
-        }
+    public void revert(TextModel textModel) throws NotepadException {
+        textModel.remove(pos, inserted.length());
     }
 
     @Override

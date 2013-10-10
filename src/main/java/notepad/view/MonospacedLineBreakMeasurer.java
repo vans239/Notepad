@@ -22,10 +22,9 @@ public class MonospacedLineBreakMeasurer {
         this.text = text;
         this.font = fontMetrics.getFont();
         this.frc = frc;
-       /* if (font == null || "Monospaced".equals(font.getFontName())) {
+        if (font == null || !Font.MONOSPACED.equals(font.getName())) {
             throw new IllegalArgumentException("Font isn't monospaced");
-        }*/
-
+        }
         this.symbolWidth = fontMetrics.charWidth('a');
     }
 

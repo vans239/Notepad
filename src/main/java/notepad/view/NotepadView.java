@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 public class NotepadView extends JPanel {
     private static final Logger log = Logger.getLogger(NotepadView.class);
-    private static final Font font = new Font("Monospaced", Font.PLAIN, 12);
+    private static final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
     private static final Color CARET_COLOR = Color.red;
     private static final Color TEXT_COLOR = Color.black;
 
@@ -37,6 +37,7 @@ public class NotepadView extends JPanel {
 
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
     private FontRenderContext frc = getFontMetrics(font).getFontRenderContext();
+
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
         update();
@@ -98,18 +99,14 @@ public class NotepadView extends JPanel {
         return new SegmentL(-viewPosition, controller.length() - viewPosition);
     }
 
-    public void updateCaretShift(final int shift) {
+    public void updateCaretShift(final int shift) throws NotepadException {
         final Segment segment = getAvailableCaretShift();
         if (segment.in(shift)) {
             caretPosition += shift;
         } else {
-            try {
-                final SegmentL segmentL = getAvailableScrollShift();
-                viewPosition += segmentL.nearest(shift);
-                caretPosition = (int) (Math.min(viewPosition + caretPosition, controller.length()) - viewPosition);
-            } catch (NotepadException e) {
-                log.error("", e);
-            }
+            final SegmentL segmentL = getAvailableScrollShift();
+            viewPosition += segmentL.nearest(shift);
+            caretPosition = (int) (Math.min(viewPosition + caretPosition, controller.length()) - viewPosition);
         }
     }
 
@@ -152,7 +149,7 @@ public class NotepadView extends JPanel {
         try {
             updateText();
         } catch (NotepadException e) {
-            log.error("", e);
+            log.error("Can't update text for view", e);
         }
         repaint();
     }
@@ -172,12 +169,13 @@ public class NotepadView extends JPanel {
         int x = 0;
         int y = 0;
         int position = 0;
-        String lines[] = text.split("\r\n");
+        final String lineSeparator = "\n";
+        String lines[] = text.split(lineSeparator);
         for (String line : lines) {
             if (y >= height) {
                 break;
             }
-            line = line + "  "; //todo enters   it's like \r\n
+            line += " " ; //lineSeparator.length
             if (line.isEmpty()) {
                 final TextLayout layout = new TextLayout(new AttributedString(" ").getIterator(), frc);
                 y += layout.getAscent() + layout.getDescent() + layout.getLeading();

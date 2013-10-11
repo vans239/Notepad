@@ -46,6 +46,7 @@ public class NotepadView extends JPanel {
                 update();
             }
         });
+        setSize(getPreferredSize());
     }
 
     public boolean isShowSelection() {

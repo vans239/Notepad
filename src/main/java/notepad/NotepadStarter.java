@@ -6,6 +6,7 @@ import notepad.controller.adapter.MouseAdapter;
 import notepad.controller.event.InitEvent;
 import notepad.controller.listener.*;
 import notepad.manager.FileManager;
+import notepad.manager.Patch;
 import notepad.manager.UndoManager;
 import notepad.manager.undo.DeleteMerger;
 import notepad.manager.undo.InsertMerger;
@@ -26,7 +27,7 @@ public class NotepadStarter {
         final FileManager fileManager = new FileManager();
         final NotepadController controller = new NotepadController();
 
-        final UndoManager undoManager = new UndoManager();
+        final UndoManager<Patch> undoManager = new UndoManager<Patch>();
         undoManager.addMerger(new InsertMerger());
         undoManager.addMerger(new DeleteMerger());
 
@@ -44,8 +45,8 @@ public class NotepadStarter {
         controller.addChangeTextListener(new ArrowListener(view));
         controller.addChangeTextListener(new TypingListener(view, gui));
         controller.addChangeTextListener(new CaretListener(view));
-        controller.addChangeTextListener(new PatchListener());
-        controller.addChangeTextListener(new UndoListener(undoManager));
+        controller.addChangeTextListener(new PatchListener(view));
+        controller.addChangeTextListener(new UndoListener(undoManager, view));
         controller.addChangeTextListener(new UpdateListener(view));
 
         gui.launchFrame();

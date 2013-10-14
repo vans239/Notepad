@@ -2,7 +2,8 @@ package notepad.manager;
 
 import notepad.NotepadException;
 import notepad.text.TextModel;
-import notepad.text.model.BufferedFlushTextModel;
+import notepad.text.model.BufferedTextModel;
+import notepad.text.model.Utf8FlushModelText;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -23,7 +24,7 @@ public class FileManager {
             log.info(String.format("Created temp file [%s] for buffering changes [%s]", temp.getAbsolutePath(), file.getPath()));
             FileUtils.copyFile(file, temp);
             temp.deleteOnExit();
-            return new BufferedFlushTextModel(temp);
+            return new BufferedTextModel(new Utf8FlushModelText(temp));
         } catch (IOException e) {
             throw new NotepadException("", e);
         }

@@ -13,39 +13,39 @@ import java.util.Stack;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class UndoManager {
+public class UndoManager<T> {
     private static final Logger log = Logger.getLogger(UndoManager.class);
     private int MAX_CAPACITY = 1024;
-    private final BoundedStack<ChangeTextEvent> undos = new BoundedStack<ChangeTextEvent>(MAX_CAPACITY);   //todo maxCapacity
-    private final BoundedStack<ChangeTextEvent> redos = new BoundedStack<ChangeTextEvent>(MAX_CAPACITY);
-    private List<Merger> mergers = new ArrayList<Merger>();
+    private final BoundedStack<T> undos = new BoundedStack<T>(MAX_CAPACITY);
+    private final BoundedStack<T> redos = new BoundedStack<T>(MAX_CAPACITY);
+    private List<Merger<T>> mergers = new ArrayList<Merger<T>>();
 
-    public void add(ChangeTextEvent event) {
+    public void add(T t) {
         redos.clear();
-        undos.push(event);
+        undos.push(t);
         merge();
     }
 
-    public ChangeTextEvent undo() {
+    public T undo() {
         if (undos.isEmpty()) {
             return null;
         }
-        final ChangeTextEvent event = undos.pop();
-        redos.push(event);
-        return event;
+        final T t = undos.pop();
+        redos.push(t);
+        return t;
     }
 
-    public void addMerger(final Merger merger) {
+    public void addMerger(final Merger<T> merger) {
         mergers.add(merger);
     }
 
-    public ChangeTextEvent redo() {
+    public T redo() {
         if (redos.isEmpty()) {
             return null;
         }
-        final ChangeTextEvent event = redos.pop();
-        undos.push(event);
-        return event;
+        final T t = redos.pop();
+        undos.push(t);
+        return t;
     }
 
 
@@ -53,13 +53,14 @@ public class UndoManager {
         boolean f = true;
         while (f) {
             f = false;
-            for (Merger merger : mergers) {
+            for (Merger<T> merger : mergers) {
                 if (undos.size() >= 2) {
-                    ChangeTextEvent last = undos.pop();
-                    ChangeTextEvent before = undos.pop();
+                    T last = undos.pop();
+                    T before = undos.pop();
                     if (merger.isMergeable(last, before)) {
                         f = true;
-                        ChangeTextEvent merged = merger.merge(last, before);
+                        T merged = merger.merge(last, before);
+                        log.debug(String.format("Merged [%s] and [%s]", last.toString(), before.toString()));
                         undos.push(merged);
                     } else {
                         undos.push(before);

@@ -6,8 +6,8 @@ import notepad.text.ChangeTextEvent;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public interface Merger {
-    boolean isMergeable(final ChangeTextEvent last, final ChangeTextEvent before);
+public interface Merger<T> {
+    boolean isMergeable(final T last, final T before);
 
-    ChangeTextEvent merge(final ChangeTextEvent last, final ChangeTextEvent before);
+    T merge(final T last, final T before);
 }

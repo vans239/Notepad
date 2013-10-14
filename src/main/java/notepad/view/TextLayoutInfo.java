@@ -1,5 +1,7 @@
 package notepad.view;
 
+import notepad.view.textlayout.SmartTextLayout;
+
 import java.awt.*;
 import java.awt.font.TextLayout;
 
@@ -9,10 +11,10 @@ import java.awt.font.TextLayout;
  */
 public class TextLayoutInfo {
     private final Point origin;
-    private final TextLayout layout;
+    private final SmartTextLayout layout;
     private final int position;
 
-    public TextLayoutInfo(TextLayout layout, Point origin, int position) {
+    public TextLayoutInfo(SmartTextLayout layout, Point origin, int position) {
         this.layout = layout;
         this.origin = origin;
         this.position = position;
@@ -26,7 +28,7 @@ public class TextLayoutInfo {
         return origin;
     }
 
-    public TextLayout getLayout() {
+    public SmartTextLayout getLayout() {
         return layout;
     }
 }

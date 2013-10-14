@@ -1,6 +1,7 @@
 package notepad.controller.event;
 
 import notepad.controller.ControllerEvent;
+import notepad.manager.Patch;
 import notepad.text.ChangeTextEvent;
 
 /**
@@ -9,20 +10,20 @@ import notepad.text.ChangeTextEvent;
  */
 public class PatchEvent implements ControllerEvent {
     private PatchType patchType;
-    private ChangeTextEvent event;
+    private Patch patch;
 
-    public PatchEvent(PatchType patchType, ChangeTextEvent event) {
+    public PatchEvent(PatchType patchType, Patch patch) {
 
         this.patchType = patchType;
-        this.event = event;
+        this.patch = patch;
     }
 
     public PatchType getPatchType() {
         return patchType;
     }
 
-    public ChangeTextEvent getEvent() {
-        return event;
+    public Patch getPatch() {
+        return patch;
     }
 
     public enum PatchType {

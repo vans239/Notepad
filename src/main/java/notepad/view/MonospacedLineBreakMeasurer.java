@@ -1,10 +1,12 @@
 package notepad.view;
 
+import notepad.view.textlayout.EmptyTextLayout;
+import notepad.view.textlayout.NonEmptyTextLayout;
+import notepad.view.textlayout.SmartTextLayout;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 
 /**
  * Evgeny Vanslov
@@ -36,11 +38,10 @@ public class MonospacedLineBreakMeasurer {
         return position;
     }
 
-    public TextLayout nextLayout(float wrappingWidth) {
+    public SmartTextLayout nextLayout(float wrappingWidth) {
         int maxSymbols = (int) (wrappingWidth / symbolWidth);
         String s = text.substring(position);
         int end;
-        //todo \r\n
         if (s.length() < maxSymbols) {
             end = s.length();
         } else {
@@ -50,6 +51,9 @@ public class MonospacedLineBreakMeasurer {
             }
         }
         position += end;
-        return new TextLayout(s.substring(0, end), font, frc);
+        if(s.substring(0, end).isEmpty()){
+            return new EmptyTextLayout(font, frc);
+        }
+        return new NonEmptyTextLayout(s.substring(0, end), font, frc);
     }
 }

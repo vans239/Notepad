@@ -20,11 +20,14 @@ import java.util.List;
 public abstract class AbstractTextModel implements TextModel {
     private static final Logger log = Logger.getLogger(AbstractTextModel.class);
 
-    protected abstract void _insert(long pos, String s) throws NotepadException;
+     /*
+        Methods without logging
+     */
+    public abstract void _insert(long pos, String s) throws NotepadException;
 
-    protected abstract void _replace(long pos, String s) throws NotepadException;
+    public abstract void _replace(long pos, String s) throws NotepadException;
 
-    protected abstract void _remove(long pos, int length) throws NotepadException;
+    public abstract void _remove(long pos, int length) throws NotepadException;
 
     @Override
     public void insert(long pos, String s) throws NotepadException {

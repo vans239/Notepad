@@ -9,3 +9,5 @@ Keybindings:
 F1 - change insert/replace modes
 undo - ctrl+z
 redo - ctrl+y
+
+File encoding UTF-8

@@ -10,7 +10,7 @@ import java.io.RandomAccessFile;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class ReadTextModel extends FlushTextModel {
+public class ReadTextModel extends Utf8FlushModelText {
     private static final Logger log = Logger.getLogger(InMemoryTextModel.class);
     private RandomAccessFile raf;
     private File file;

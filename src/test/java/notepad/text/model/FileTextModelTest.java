@@ -1,6 +1,7 @@
 package notepad.text.model;
 
 import notepad.NotepadException;
+import notepad.text.TextModel;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -24,7 +25,7 @@ public class FileTextModelTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
 
-    private FlushTextModel fileTextModel;
+    private TextModel textModel;
 
     @Before
     public void init() throws NotepadException, IOException {
@@ -35,51 +36,34 @@ public class FileTextModelTest {
         IOUtils.copy(input, output);
         output.close();
         input.close();
-        fileTextModel = new FlushTextModel(file);
+        textModel = new Utf8FlushModelText(file);
+        file.deleteOnExit();
     }
-
     @Test
-    public void currTest() throws NotepadException {
-        File file = new File("src/test/test-data/coding.txt");
-        FlushTextModel textModel = new FlushTextModel(file);
-        String text = textModel.get(0, (int) textModel.length());
-        Assert.assertEquals("Not one byte encoding", text.length(), textModel.length());
+    public void get() throws NotepadException {
+        Assert.assertEquals("In", textModel.get(0, 2));
     }
-
     @Test
     public void length() throws NotepadException {
-        Assert.assertEquals(9, fileTextModel.length());
+        Assert.assertEquals(9, textModel.length());
     }
 
     @Test
     public void replace() throws NotepadException {
-        fileTextModel.replace(3, "abc");
-        Assert.assertEquals("Insabcces", fileTextModel.get(0, (int) fileTextModel.length()));
-    }
-
-    @Test
-    public void shiftRight() throws NotepadException {
-        fileTextModel.shiftAndChangeSize(3, 3);
-        Assert.assertEquals(12, fileTextModel.length());
-        Assert.assertEquals("Ins\u0000\u0000\u0000tances", fileTextModel.get(0, (int) fileTextModel.length()));
-    }
-
-    @Test
-    public void shiftLeft() throws NotepadException {
-        fileTextModel.shiftAndChangeSize(3, -2);
-        Assert.assertEquals("Itances", fileTextModel.get(0, (int) fileTextModel.length()));
+        textModel.replace(3, "abc");
+        Assert.assertEquals("Insabcces", textModel.get(0, (int) textModel.length()));
     }
 
     @Test
     public void insert() throws NotepadException {
-        fileTextModel.insert(3, "abc");
-        Assert.assertEquals(12, fileTextModel.length());
-        Assert.assertEquals("Insabctances", fileTextModel.get(0, (int) fileTextModel.length()));
+        textModel.insert(3, "abc");
+        Assert.assertEquals(12, textModel.length());
+        Assert.assertEquals("Insabctances", textModel.get(0, (int) textModel.length()));
     }
 
     @Test
     public void remove() throws NotepadException {
-        fileTextModel.remove(3, 2);
-        Assert.assertEquals("Insnces", fileTextModel.get(0, (int) fileTextModel.length()));
+        textModel.remove(3, 2);
+        Assert.assertEquals("Insnces", textModel.get(0, (int) textModel.length()));
     }
 }

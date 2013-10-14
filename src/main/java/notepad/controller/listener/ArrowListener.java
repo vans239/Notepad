@@ -38,6 +38,7 @@ public class ArrowListener implements ControllerListener {
             if(!ke.getType().equals(KeyboardType.PRESSED)){
                 return;
             }
+            log.debug(String.format("ViewPos [%d] EditPos[%d] CaretPos [%d]", view.getViewPosition(), view.getEditPosition(), view.getCaretPosition()));
             int shift = 0;
             switch (ke.getKeyEvent().getKeyCode()) {
                 case VK_LEFT:

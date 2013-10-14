@@ -1,6 +1,7 @@
 package notepad.text.model;
 
 import notepad.NotepadException;
+import notepad.text.TextModel;
 import notepad.utils.SegmentL;
 import org.apache.log4j.Logger;
 
@@ -10,26 +11,25 @@ import java.io.File;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-//todo change encoding. Now this class properly works only on 1-byte coding
-public class BufferedFlushTextModel extends AbstractTextModel {
-    private static final Logger log = Logger.getLogger(BufferedFlushTextModel.class);
+public class BufferedTextModel extends AbstractTextModel {
+    private static final Logger log = Logger.getLogger(BufferedTextModel.class);
     private static final int BUFFER_SIZE = 30000;
     private static int bufferSize = BUFFER_SIZE;
 
-    private FlushTextModel textModel;
+    private AbstractTextModel textModel;
 
     private long position;
-    private int beforeEditionSize;
+    private String beforeBufferText;
     private StringBuilder sb;
 
-    public BufferedFlushTextModel(File file) throws NotepadException {
-        textModel = new FlushTextModel(file);
+    public BufferedTextModel(AbstractTextModel textModel) throws NotepadException {
+        this.textModel = textModel;
         initBuffer(new SegmentL(0, 0));
     }
 
     @Override
     public long length() throws NotepadException {
-        return textModel.length() - beforeEditionSize + sb.length();
+        return textModel.length() - beforeBufferText.length() + sb.length();
     }
 
     @Override
@@ -50,25 +50,25 @@ public class BufferedFlushTextModel extends AbstractTextModel {
     }
 
     private void flushBuffer() throws NotepadException {
-        int shift = sb.length() - beforeEditionSize;
-        textModel.shiftAndChangeSize(position + beforeEditionSize, shift);
-        textModel.replace(position, sb.toString());
+        String buffer = sb.toString();
+        textModel._remove(position, beforeBufferText.length());
+        textModel._insert(position, buffer);
     }
 
     @Override
-    protected void _insert(long pos, String s) throws NotepadException {
+    public void _insert(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.insert((int) (pos - position), s);
     }
 
     @Override
-    protected void _replace(long pos, String s) throws NotepadException {
+    public void _replace(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.replace((int) (pos - position), (int) (pos - position + s.length()), s);
     }
 
     @Override
-    protected void _remove(long pos, int length) throws NotepadException {
+    public void _remove(long pos, int length) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + length));
         sb.delete((int) (pos - position), (int) (pos - position + length));
     }
@@ -92,7 +92,7 @@ public class BufferedFlushTextModel extends AbstractTextModel {
         int length = (int) (fileSegment.nearest(position + bufferSize) - position);
         final String s = textModel.get(position, length);
         sb = new StringBuilder(s);
-        beforeEditionSize = s.length();
+        beforeBufferText = s;
     }
 
     private SegmentL getBufferSegment() {

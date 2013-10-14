@@ -12,9 +12,9 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.text.AttributedString;
+import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Evgeny Vanslov
@@ -22,10 +22,15 @@ import java.util.ArrayList;
  */
 public class NotepadView extends JPanel {
     private static final Logger log = Logger.getLogger(NotepadView.class);
-    private static final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
-    private final FontMetrics metrics = getFontMetrics(font);
+    private static final Font FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
+
+    private final FontMetrics metrics = getFontMetrics(FONT);
     private static final Color CARET_COLOR = Color.red;
     private static final Color TEXT_COLOR = Color.black;
+    private static final Color INV_TEXT_COLOR = Color.white;
+    private static final Color BACKGROUND = Color.white;
+    private static final Color INV_BACKGROUND = Color.blue;
+
 
     private int maxLength;
     private long viewPosition = 0;
@@ -36,9 +41,10 @@ public class NotepadView extends JPanel {
 
     private String text;
     private NotepadController controller;
-
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
-    private FontRenderContext frc = getFontMetrics(font).getFontRenderContext();
+    private FontRenderContext frc = getFontMetrics(FONT).getFontRenderContext();
+
+
 
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
@@ -74,7 +80,7 @@ public class NotepadView extends JPanel {
 
     public void updateMaxLength() {
         //todo find real coeff
-        maxLength = 3 * (getSize().width / getFontMetrics(font).charWidth('a')) * (getSize().height / getFontMetrics(font).getHeight()) / 2;
+        maxLength = 3 * (getSize().width / getFontMetrics(FONT).charWidth('a')) * (getSize().height / getFontMetrics(FONT).getHeight()) / 2;
     }
 
     public Dimension getPreferredSize() {
@@ -138,11 +144,11 @@ public class NotepadView extends JPanel {
         final int drawPosY = 0;
 
         g2d.translate(drawPosX, drawPosY);
-        drawLayouts(g2d);
-        drawCaret(g2d);
         if (isShowSelection) {
             drawDragged(g2d);
         }
+        drawLayouts(g2d);
+        drawCaret(g2d);
     }
 
     public void update() {
@@ -166,34 +172,25 @@ public class NotepadView extends JPanel {
         int x = 0;
         int y = 0;
         int position = 0;
-        final String lineSeparator = "\n";
-        String lines[] = text.split(lineSeparator);
-        for (String line : lines) {
-            if (y > height) {
-                break;
-            }
-            line += " " ; //lineSeparator.length
-            final MonospacedLineBreakMeasurer lineMeasurer =
-                    new MonospacedLineBreakMeasurer(line, getFontMetrics(font), frc);
-            lineMeasurer.setPosition(0);
-            while (lineMeasurer.getPosition() < line.length() && y <= height) {
-                final SmartTextLayout layout = lineMeasurer.nextLayout(breakWidth);
-                y += metrics.getHeight();
-                layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
-                position += layout.getCharacterCount();
-            }
+
+        final MonospacedLineBreakMeasurer lineMeasurer =
+                new MonospacedLineBreakMeasurer(text, getFontMetrics(FONT), frc, breakWidth);
+        for(Iterator<SmartTextLayout> it = lineMeasurer.iterator(); it.hasNext() && y + metrics.getHeight() <= height; ) {
+            final SmartTextLayout layout = it.next();
+            y += metrics.getHeight();
+            layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
+            position += layout.getCharacterCount();
         }
         if (y > height) {
             final TextLayoutInfo textLayoutInfo = layouts.get(layouts.size() - 1);
-            layouts.remove(layouts.size() - 1);
             text = text.substring(0, textLayoutInfo.getPosition());
-//            caretPosition = Math.min(text.length(), caretPosition);
-//            log.info(String.format("New caret pos[%d]", caretPosition));
         }
     }
 
     private void drawLayouts(Graphics2D g2d) {
         for (final TextLayoutInfo layoutInfo : layouts) {
+            g2d.setBackground(BACKGROUND);
+            g2d.setColor(TEXT_COLOR);
             layoutInfo.getLayout().draw(g2d, layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
         }
     }
@@ -205,9 +202,9 @@ public class NotepadView extends JPanel {
                 g2d.translate(layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
                 final Shape[] carets = layoutInfo.getLayout().getCaretShapes(
                         caretPosition - layoutInfo.getPosition());
+                g2d.setBackground(BACKGROUND);
                 g2d.setColor(CARET_COLOR);
                 g2d.draw(carets[0]);
-                g2d.setColor(TEXT_COLOR);
                 g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
             }
         }
@@ -226,10 +223,8 @@ public class NotepadView extends JPanel {
                 final Segment blackboxSegment =
                         new Segment(segment.nearest(draggedFrom) - layoutInfo.getPosition(), segment.nearest(draggedTo) - layoutInfo.getPosition());
                 if (blackboxSegment.getEnd() != blackboxSegment.getStart()) {
-                    final Shape blackbox = layoutInfo.getLayout().getLogicalHighlightShape(blackboxSegment.getStart(), blackboxSegment.getEnd());
-                    g2d.setColor(CARET_COLOR);
-                    g2d.draw(blackbox);
-                    g2d.setColor(TEXT_COLOR);
+                    layoutInfo.getLayout().addAttribute(TextAttribute.FOREGROUND, INV_TEXT_COLOR, blackboxSegment.getStart(), blackboxSegment.getEnd() );
+                    layoutInfo.getLayout().addAttribute(TextAttribute.BACKGROUND, INV_BACKGROUND, blackboxSegment.getStart(), blackboxSegment.getEnd() );
                 }
                 g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
             }
@@ -241,6 +236,6 @@ public class NotepadView extends JPanel {
         int from = layoutInfo.getPosition();
         int to = from + layoutInfo.getLayout().getCharacterCount();
         return (caretPosition >= from && caretPosition < to)
-                || (caretPosition > from && isLastLayout);
+                || (caretPosition >= from && isLastLayout);
     }
 }

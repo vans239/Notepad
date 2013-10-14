@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
+import java.awt.geom.GeneralPath;
+import java.text.AttributedCharacterIterator;
 
 /**
  * Evgeny Vanslov
@@ -14,14 +16,17 @@ import java.awt.font.TextLayout;
  */
 public class EmptyTextLayout implements SmartTextLayout {
     private static final Logger log = Logger.getLogger(EmptyTextLayout.class);
+    private boolean isNewLine;
+    private FontMetrics metrics;
 
     @Override
     public int getCharacterCount() {
-        return 1;
-
+        return isNewLine ? 1 : 0;
     }
 
-    public EmptyTextLayout(Font f, FontRenderContext frc){
+    public EmptyTextLayout(boolean isNewLine, FontMetrics metrics){
+        this.isNewLine = isNewLine;
+        this.metrics = metrics;
     }
 
     @Override
@@ -36,9 +41,22 @@ public class EmptyTextLayout implements SmartTextLayout {
 
     @Override
     public Shape[] getCaretShapes(int index) {
-        return null;
+        if(index != 0){
+            throw new IllegalArgumentException("No such element");
+        }
+        final Shape shapes[] = new Shape[1];
+        final GeneralPath shape = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 2);
+        shape.moveTo(0, -metrics.getAscent());
+        shape.lineTo(0, metrics.getDescent());
+        shapes[0] = shape;
+        return shapes;
     }
+
     @Override
     public void draw(Graphics2D g2d, int x, int y) {
+    }
+
+    @Override
+    public void addAttribute(AttributedCharacterIterator.Attribute attribute, Object obj, int start, int end) {
     }
 }

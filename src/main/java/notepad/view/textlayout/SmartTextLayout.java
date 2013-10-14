@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.awt.font.TextHitInfo;
+import java.text.AttributedCharacterIterator;
 
 /**
  * Evgeny Vanslov
@@ -15,4 +16,5 @@ public interface SmartTextLayout {
     Shape getLogicalHighlightShape(int firstEndpoint, int secondEndpoint);
     Shape[] getCaretShapes(int index);
     void draw(Graphics2D g2d, int x, int y);
+    void addAttribute(AttributedCharacterIterator.Attribute attribute, Object obj, int start, int end);
 }

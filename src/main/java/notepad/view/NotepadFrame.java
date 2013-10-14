@@ -20,6 +20,7 @@ public class NotepadFrame extends JFrame {
     private Mode mode = Mode.INSERT;
     private JMenu modeMenu = new JMenu(mode.name());
     private String currentDirectoryPath = "X:\\Dropbox\\programms\\Java\\Notepad+";
+    private boolean isEdited = false;
 
     public NotepadFrame(NotepadController controller, NotepadView notepadView) {
         this.controller = controller;
@@ -52,6 +53,9 @@ public class NotepadFrame extends JFrame {
             }
         });
     }
+    public void edited() {
+        isEdited = true;
+    }
 
     public void swapMode() {
         mode = mode.swap();
@@ -78,20 +82,21 @@ public class NotepadFrame extends JFrame {
     public class ListenMenuSave implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             sFile();
-            if (fileSave == JFileChooser.APPROVE_OPTION) {
-                controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.SAVE, sFile.getSelectedFile().getPath()));
-                log.info(String.format("File for save: [%s]", sFile.getSelectedFile().getPath()));
-            }
         }
     }
 
     public class ListenMenuOpen implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            oFile();
-            if (fileOpen == JFileChooser.APPROVE_OPTION) {
-                controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.OPEN, oFile.getSelectedFile().getPath()));
-                log.info(String.format("File for open: [%s]", oFile.getSelectedFile().getPath()));
+            if(isEdited){
+                int ans = JOptionPane.showConfirmDialog(
+                        NotepadFrame.this, "Do you want to save changes?",
+                        "Notepad+",
+                        JOptionPane.YES_NO_OPTION);
+                if(ans == JOptionPane.YES_OPTION){
+                    sFile();
+                }
             }
+            oFile();
         }
     }
 
@@ -99,12 +104,22 @@ public class NotepadFrame extends JFrame {
         JFileChooser save = new JFileChooser(currentDirectoryPath);
         fileSave = save.showSaveDialog(this);
         sFile = save;
+        if (fileSave == JFileChooser.APPROVE_OPTION) {
+            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.SAVE, sFile.getSelectedFile().getPath()));
+            log.info(String.format("File for save: [%s]", sFile.getSelectedFile().getPath()));
+        }
+        isEdited = false;
     }
 
     public void oFile() {
         JFileChooser open = new JFileChooser(currentDirectoryPath);
         fileOpen = open.showOpenDialog(this);
         oFile = open;
+        if (fileOpen == JFileChooser.APPROVE_OPTION) {
+            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.OPEN, oFile.getSelectedFile().getPath()));
+            isEdited = true;
+            log.info(String.format("File for open: [%s]", oFile.getSelectedFile().getPath()));
+        }
     }
 
     public void launchFrame() {

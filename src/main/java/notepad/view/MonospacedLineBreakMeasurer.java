@@ -4,23 +4,28 @@ import notepad.view.textlayout.EmptyTextLayout;
 import notepad.view.textlayout.NonEmptyTextLayout;
 import notepad.view.textlayout.SmartTextLayout;
 import org.apache.log4j.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.util.Iterator;
 
 /**
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class MonospacedLineBreakMeasurer {
+public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout>{
     private static final Logger log = Logger.getLogger(MonospacedLineBreakMeasurer.class);
-    private String text;
-    private Font font;
-    private FontRenderContext frc;
-    private int position;
-    private int symbolWidth;
+    private static final String lineSeparator = "\n";
 
-    public MonospacedLineBreakMeasurer(String text, FontMetrics fontMetrics, FontRenderContext frc) {
+    private final Font font;
+    private final FontRenderContext frc;
+    private final FontMetrics fontMetrics;
+    private final int symbolWidth;
+    private final int wrappingWidth;
+    private String text;
+
+    public MonospacedLineBreakMeasurer(String text, FontMetrics fontMetrics, FontRenderContext frc, int wrappingWidth) {
         this.text = text;
         this.font = fontMetrics.getFont();
         this.frc = frc;
@@ -28,32 +33,62 @@ public class MonospacedLineBreakMeasurer {
             throw new IllegalArgumentException("Font isn't monospaced");
         }
         this.symbolWidth = fontMetrics.charWidth('a');
+        this.fontMetrics = fontMetrics;
+        this.wrappingWidth = wrappingWidth;
     }
 
-    void setPosition(int pos) {
-        position = pos;
-    }
+    @Override
+    public Iterator<SmartTextLayout> iterator() {
 
-    public int getPosition() {
-        return position;
-    }
+        return new Iterator<SmartTextLayout>() {
+            private final int maxSymbols = wrappingWidth / symbolWidth;
 
-    public SmartTextLayout nextLayout(float wrappingWidth) {
-        int maxSymbols = (int) (wrappingWidth / symbolWidth);
-        String s = text.substring(position);
-        int end;
-        if (s.length() < maxSymbols) {
-            end = s.length();
-        } else {
-            end = s.substring(0, Math.min(maxSymbols, s.length())).lastIndexOf(' ') + 1;
-            if (end == 0) {
-                end = Math.min(s.length(), maxSymbols);
+            private boolean endLine = true;
+            private String text = MonospacedLineBreakMeasurer.this.text;
+
+            @Override
+            public boolean hasNext() {
+                return endLine || !text.isEmpty();
             }
-        }
-        position += end;
-        if(s.substring(0, end).isEmpty()){
-            return new EmptyTextLayout(font, frc);
-        }
-        return new NonEmptyTextLayout(s.substring(0, end), font, frc);
+
+            @Override
+            public SmartTextLayout next() {
+                endLine = false;
+                int end;
+                SmartTextLayout curr;
+                if(text.isEmpty()){
+                    return new EmptyTextLayout(false, fontMetrics);
+                }
+                if (text.length() < maxSymbols) {
+                    end = text.length();
+                    curr = new NonEmptyTextLayout(false, text.substring(0, end), font, frc);
+                } else {
+                    int min = Math.min(maxSymbols, text.length());
+                    end = text.substring(0, min).lastIndexOf(' ') + 1;
+                    if (end == 0) {
+                        end = min;
+                    }
+                    curr = new NonEmptyTextLayout(false, text.substring(0, end), font, frc);
+                }
+
+                int separatorIndex = text.indexOf(lineSeparator);
+                if (separatorIndex != -1 && separatorIndex < end) {
+                    end = separatorIndex + 1;
+                    if (end != 0) {
+                        curr = new NonEmptyTextLayout(true, text.substring(0, end - 1), font, frc);
+                    } else {
+                        curr = new EmptyTextLayout(true, fontMetrics);
+                    }
+                    endLine = true;
+                }
+                text = text.substring(end);
+                return curr;
+            }
+
+            @Override
+            public void remove() {
+                throw new NotImplementedException();
+            }
+        };
     }
 }

@@ -83,7 +83,7 @@ public class TypingListener implements ControllerListener {
 
         @Override
         public void typed(char keyChar) throws NotepadException {
-            if (notepad.getMode() == Mode.INSERT) {
+            if (notepad.getMode() == Mode.INSERT || view.getEditPosition() == controller.length()) {
                 textModel.insert(view.getEditPosition(), Character.toString(keyChar));
             } else {
                 textModel.replace(view.getEditPosition(), Character.toString(keyChar));

@@ -47,7 +47,7 @@ public class NotepadStarter {
         controller.addChangeTextListener(new CaretListener(view));
         controller.addChangeTextListener(new PatchListener(view));
         controller.addChangeTextListener(new UndoListener(undoManager, view));
-        controller.addChangeTextListener(new UpdateListener(view));
+        controller.addChangeTextListener(new UpdateListener(view, gui));
 
         gui.launchFrame();
     }

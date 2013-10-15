@@ -20,18 +20,18 @@ public class ReadTextModel extends Utf8FlushModelText {
     }
 
     @Override
-    public void _insert(long pos, String s) throws NotepadException {
+    public void doInsert(long pos, String s) throws NotepadException {
         throw new UnsupportedOperationException("This is read text model");
     }
 
 
     @Override
-    public void _replace(long pos, String s) throws NotepadException {
+    public void doReplace(long pos, String s) throws NotepadException {
         throw new UnsupportedOperationException("This is read text model");
     }
 
     @Override
-    public void _remove(long pos, int length) throws NotepadException {
+    public void doRemove(long pos, int length) throws NotepadException {
         throw new UnsupportedOperationException("This is read text model");
     }
 }

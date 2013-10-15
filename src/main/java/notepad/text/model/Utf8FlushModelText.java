@@ -132,23 +132,23 @@ public class Utf8FlushModelText extends AbstractTextModel {
     }
 
     @Override
-    public void _insert(long pos, String s) throws NotepadException {
+    public void doInsert(long pos, String s) throws NotepadException {
         this.length += s.length();
         long bytePos = charPosToBytePos(pos);
         shiftAndChangeSize(bytePos, s.getBytes(charset).length);
-        _replace(pos, s);
+        doReplace(pos, s);
     }
 
 
     @Override
-    public void _replace(long pos, String s) throws NotepadException {
+    public void doReplace(long pos, String s) throws NotepadException {
         byte[] bytes = s.getBytes(charset);
         byteReplace(charPosToBytePos(pos), bytes, 0, bytes.length);
     }
 
 
     @Override
-    public void _remove(long pos, int length) throws NotepadException {
+    public void doRemove(long pos, int length) throws NotepadException {
         this.length -= length;
         long bytePos = charPosToBytePos(pos);
         int byteLength = (int) ( charPosToBytePos(pos + length) - bytePos);

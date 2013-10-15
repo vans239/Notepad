@@ -56,17 +56,17 @@ public class InMemoryTextModel extends AbstractTextModel {
     }
 
     @Override
-    public void _insert(long pos, String s) throws NotepadException {
+    public void doInsert(long pos, String s) throws NotepadException {
         sb.insert((int) pos, s);
     }
 
     @Override
-    public void _replace(long pos, String s) throws NotepadException {
+    public void doReplace(long pos, String s) throws NotepadException {
         sb.replace((int) pos, (int) pos + s.length(), s);
     }
 
     @Override
-    public void _remove(long pos, int length) throws NotepadException {
+    public void doRemove(long pos, int length) throws NotepadException {
         sb.delete((int) pos, (int) pos + length);
     }
 }

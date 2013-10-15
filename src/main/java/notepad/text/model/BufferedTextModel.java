@@ -1,7 +1,6 @@
 package notepad.text.model;
 
 import notepad.NotepadException;
-import notepad.text.TextModel;
 import notepad.utils.SegmentL;
 import org.apache.log4j.Logger;
 
@@ -51,24 +50,24 @@ public class BufferedTextModel extends AbstractTextModel {
 
     private void flushBuffer() throws NotepadException {
         String buffer = sb.toString();
-        textModel._remove(position, beforeBufferText.length());
-        textModel._insert(position, buffer);
+        textModel.doRemove(position, beforeBufferText.length());
+        textModel.doInsert(position, buffer);
     }
 
     @Override
-    public void _insert(long pos, String s) throws NotepadException {
+    public void doInsert(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.insert((int) (pos - position), s);
     }
 
     @Override
-    public void _replace(long pos, String s) throws NotepadException {
+    public void doReplace(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.replace((int) (pos - position), (int) (pos - position + s.length()), s);
     }
 
     @Override
-    public void _remove(long pos, int length) throws NotepadException {
+    public void doRemove(long pos, int length) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + length));
         sb.delete((int) (pos - position), (int) (pos - position + length));
     }

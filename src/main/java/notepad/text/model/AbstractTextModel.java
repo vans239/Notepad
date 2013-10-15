@@ -23,29 +23,29 @@ public abstract class AbstractTextModel implements TextModel {
      /*
         Methods without logging
      */
-    public abstract void _insert(long pos, String s) throws NotepadException;
+    public abstract void doInsert(long pos, String s) throws NotepadException;
 
-    public abstract void _replace(long pos, String s) throws NotepadException;
+    public abstract void doReplace(long pos, String s) throws NotepadException;
 
-    public abstract void _remove(long pos, int length) throws NotepadException;
+    public abstract void doRemove(long pos, int length) throws NotepadException;
 
     @Override
     public void insert(long pos, String s) throws NotepadException {
-        _insert(pos, s);
+        doInsert(pos, s);
         notifyChangeTextListeners(new InsertEvent(pos, s));
     }
 
     @Override
     public void replace(long pos, String s) throws NotepadException {
         final String replaced = get(pos, s.length());
-        _replace(pos, s);
+        doReplace(pos, s);
         notifyChangeTextListeners(new ReplaceEvent(pos, replaced, s));
     }
 
     @Override
     public void remove(long pos, int length) throws NotepadException {
         final String removed = get(pos, length);
-        _remove(pos, length);
+        doRemove(pos, length);
         notifyChangeTextListeners(new DeleteEvent(pos, removed));
     }
 

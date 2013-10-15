@@ -14,7 +14,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Evgeny Vanslov
@@ -43,8 +42,6 @@ public class NotepadView extends JPanel {
     private NotepadController controller;
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
     private FontRenderContext frc = getFontMetrics(FONT).getFontRenderContext();
-
-
 
     public NotepadView(final NotepadController controller) throws NotepadException {
         this.controller = controller;
@@ -95,12 +92,12 @@ public class NotepadView extends JPanel {
         return viewPosition + caretPosition;
     }
 
-    public void updateScrollShift(final int shift) throws NotepadException {
-        viewPosition = new SegmentL(0, controller.length()).nearest(viewPosition + shift);
+    public void scrollUp(){
+        log.info("scroll up");
     }
 
-    public boolean isAvailableShiftScroll(final int shift) throws NotepadException {
-        return new SegmentL(0, controller.length()).in(viewPosition + shift);
+    public void scrollDown(){
+        log.info("scroll down");
     }
 
     public SegmentL getAvailableScrollShift() throws NotepadException {
@@ -112,9 +109,19 @@ public class NotepadView extends JPanel {
         if (segment.in(shift)) {
             caretPosition += shift;
         } else {
+            //todo shift should be small now
             final SegmentL segmentL = getAvailableScrollShift();
-            viewPosition += segmentL.nearest(shift);
-            caretPosition = (int) (Math.min(viewPosition + caretPosition, controller.length()) - viewPosition);
+            int realShift;
+            if(shift > 0){
+                realShift = layouts.get(0).getLayout().getCharacterCount();
+            } else {
+                realShift = -layouts.get(0).getLayout().getCharacterCount();
+            }
+            viewPosition += segmentL.nearest(realShift);
+            caretPosition = (int) (Math.min(viewPosition + caretPosition - realShift + shift, controller.length()) - viewPosition);
+        }
+        if(caretPosition > text.length()){
+            log.info("aa");
         }
         log.info(String.format("New caret pos[%d]", caretPosition));
     }
@@ -175,16 +182,16 @@ public class NotepadView extends JPanel {
 
         final MonospacedLineBreakMeasurer lineMeasurer =
                 new MonospacedLineBreakMeasurer(text, getFontMetrics(FONT), frc, breakWidth);
-        for(Iterator<SmartTextLayout> it = lineMeasurer.iterator(); it.hasNext() && y + metrics.getHeight() <= height; ) {
-            final SmartTextLayout layout = it.next();
+        for (final SmartTextLayout layout : lineMeasurer) {
             y += metrics.getHeight();
-            layouts.add(new TextLayoutInfo(layout, new Point(x, y), position));
+            TextLayoutInfo layoutInfo = new TextLayoutInfo(layout, new Point(x, y), position);
+            layouts.add(layoutInfo);
             position += layout.getCharacterCount();
+            if (y + metrics.getHeight() > height) {
+                break;
+            }
         }
-        if (y > height) {
-            final TextLayoutInfo textLayoutInfo = layouts.get(layouts.size() - 1);
-            text = text.substring(0, textLayoutInfo.getPosition());
-        }
+        text = text.substring(0, position);
     }
 
     private void drawLayouts(Graphics2D g2d) {

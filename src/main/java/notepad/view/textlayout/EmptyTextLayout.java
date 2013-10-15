@@ -35,11 +35,6 @@ public class EmptyTextLayout implements SmartTextLayout {
     }
 
     @Override
-    public Shape getLogicalHighlightShape(int firstEndpoint, int secondEndpoint) {
-        return new Rectangle();
-    }
-
-    @Override
     public Shape[] getCaretShapes(int index) {
         if(index != 0){
             throw new IllegalArgumentException("No such element");

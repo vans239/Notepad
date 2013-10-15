@@ -39,7 +39,6 @@ public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout>{
 
     @Override
     public Iterator<SmartTextLayout> iterator() {
-
         return new Iterator<SmartTextLayout>() {
             private final int maxSymbols = wrappingWidth / symbolWidth;
 

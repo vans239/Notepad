@@ -46,11 +46,6 @@ public class NonEmptyTextLayout implements SmartTextLayout {
     }
 
     @Override
-    public Shape getLogicalHighlightShape(int firstEndpoint, int secondEndpoint) {
-        return textLayout.getLogicalHighlightShape(firstEndpoint, secondEndpoint);
-    }
-
-    @Override
     public void draw(Graphics2D g2d, int x, int y) {
         textLayout.draw(g2d, x, y);
     }

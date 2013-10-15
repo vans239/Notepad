@@ -31,11 +31,12 @@ public class ArrowListener implements ControllerListener {
 
     private int hit1;
     private int hit2;
+
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
         if (event instanceof KeyboardEvent) {
             final KeyboardEvent ke = (KeyboardEvent) event;
-            if(!ke.getType().equals(KeyboardType.PRESSED)){
+            if (!ke.getType().equals(KeyboardType.PRESSED)) {
                 return;
             }
             log.debug(String.format("ViewPos [%d] EditPos[%d] CaretPos [%d]", view.getViewPosition(), view.getEditPosition(), view.getCaretPosition()));
@@ -54,14 +55,14 @@ public class ArrowListener implements ControllerListener {
                     shift = up();
                     break;
             }
-            if (ke.getKeyEvent().isShiftDown() && !view.isShowSelection()){
+            if (ke.getKeyEvent().isShiftDown() && !view.isShowSelection()) {
                 hit1 = view.getCaretPosition();
             }
             if (shift != 0) {
                 if (!ke.getKeyEvent().isShiftDown()) {
                     view.showSelectionSegment(false);
                     controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
-                } else if(ke.getKeyEvent().isShiftDown()){
+                } else if (ke.getKeyEvent().isShiftDown()) {
                     hit2 = view.getCaretPosition() + shift;
                     view.updateSelectionSegment(new Segment(Math.min(hit1, hit2), Math.max(hit1, hit2)));
                     view.showSelectionSegment(true);
@@ -84,7 +85,11 @@ public class ArrowListener implements ControllerListener {
         for (int i = 0; i < layouts.size(); ++i) {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
-                return textLayoutInfo.getLayout().getCharacterCount();
+                if (i == layouts.size()) {
+                    return textLayoutInfo.getLayout().getCharacterCount();
+                } else {
+                    return  textLayoutInfo.getLayout().getCharacterCount();//todo change
+                }
             }
         }
         return 0;
@@ -95,7 +100,7 @@ public class ArrowListener implements ControllerListener {
         for (int i = 0; i < layouts.size(); ++i) {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
-                if(i > 0){
+                if (i > 0) {
                     return Math.min(-layouts.get(i - 1).getLayout().getCharacterCount(),
                             -(view.getCaretPosition() - textLayoutInfo.getPosition()));
                 }

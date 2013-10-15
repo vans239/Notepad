@@ -13,7 +13,6 @@ import java.text.AttributedCharacterIterator;
 public interface SmartTextLayout {
     int getCharacterCount();
     TextHitInfo hitTestChar(int x, int y);
-    Shape getLogicalHighlightShape(int firstEndpoint, int secondEndpoint);
     Shape[] getCaretShapes(int index);
     void draw(Graphics2D g2d, int x, int y);
     void addAttribute(AttributedCharacterIterator.Attribute attribute, Object obj, int start, int end);

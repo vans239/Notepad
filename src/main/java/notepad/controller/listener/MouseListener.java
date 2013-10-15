@@ -44,12 +44,12 @@ public class MouseListener implements ControllerListener {
 
             if (mouseEvent.getType().equals(CLICKED)) {
                 log.info(mouseEvent.getEvent().getPoint());
-                int index = getHitIndex(mouseEvent.getEvent().getPoint());
+                long index = view.getViewPosition() + getHitIndex(mouseEvent.getEvent().getPoint());
                 controller.fireControllerEvent(
                         new CaretEvent(CaretEvent.CaretEventType.GOTO, index));
                 view.showSelectionSegment(false);
             } else if (mouseEvent.getType().equals(PRESSED)) {
-                hit1 = getHitIndex(mouseEvent.getEvent().getPoint());
+                hit1 = view.getViewPosition() + getHitIndex(mouseEvent.getEvent().getPoint());
                 hit2 = hit1;
             } else if (mouseEvent.getType().equals(RELEASED) || mouseEvent.getType().equals(DRAGGED)) {
                 int caretHit = getHitIndex(mouseEvent.getEvent().getPoint());

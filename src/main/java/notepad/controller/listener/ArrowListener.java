@@ -79,7 +79,7 @@ public class ArrowListener implements ControllerListener {
     private TextLayoutInfo caretLayoutInfo;
     private ArrayList<TextLayoutInfo> layouts;
 
-    void left(NotepadController controller) {
+    private void left(NotepadController controller) {
         if (view.getCaretPosition() > 0 ) {
             controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, -1));
         } else {
@@ -87,7 +87,7 @@ public class ArrowListener implements ControllerListener {
         }
     }
 
-    void right(NotepadController controller) {
+    private void right(NotepadController controller) {
         if (index != layouts.size() - 1 || (caretLayoutInfo.getPosition() + caretLayoutInfo.getLayout().getCharacterCount() - view.getCaretPosition() > 1)) {
             controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, 1));
         } else {
@@ -95,7 +95,7 @@ public class ArrowListener implements ControllerListener {
         }
     }
 
-    void down(NotepadController controller) {
+    private void down(NotepadController controller) {
         if (index != layouts.size() - 1) {
             TextLayoutInfo nextTextLayoutInfo = layouts.get(index + 1);
             int shift = Math.min(
@@ -107,7 +107,7 @@ public class ArrowListener implements ControllerListener {
         }
     }
 
-    void up(NotepadController controller) {
+    private void up(NotepadController controller) {
         if (index > 0) {
             int shift = Math.min(-layouts.get(index - 1).getLayout().getCharacterCount(),
                     -(view.getCaretPosition() - caretLayoutInfo.getPosition() + 1));

@@ -6,7 +6,7 @@ Simple notepad on java
 This is simple notepad on java.
 
 Keybindings:
-F1 - change insert/replace modes
+change insert/replace modes - INSERT
 undo - ctrl+z
 redo - ctrl+y
 

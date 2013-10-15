@@ -59,7 +59,7 @@ public class TypingListener implements ControllerListener {
             if (ke.getType().equals(KeyboardType.PRESSED) && ke.getKeyEvent().getKeyCode() == KeyEvent.VK_DELETE) {
                 handler.delete();
             }
-            if (ke.getType().equals(KeyboardType.RELEASED) && ke.getKeyEvent().getKeyCode() == KeyEvent.VK_F1) {
+            if (ke.getType().equals(KeyboardType.RELEASED) && ke.getKeyEvent().getKeyCode() == KeyEvent.VK_INSERT) {
                 notepad.swapMode();
             }
         }

@@ -58,6 +58,10 @@ public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout>{
                 if(text.isEmpty()){
                     return new EmptyTextLayout(false, fontMetrics);
                 }
+                if("\n".equals(text)){
+                    text = "";
+                    return new EmptyTextLayout(true, fontMetrics);
+                }
                 if (text.length() < maxSymbols) {
                     end = text.length();
                     curr = new NonEmptyTextLayout(false, text.substring(0, end), font, frc);
@@ -71,7 +75,7 @@ public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout>{
                 }
 
                 int separatorIndex = text.indexOf(lineSeparator);
-                if (separatorIndex != -1 && separatorIndex < end) {
+                if (separatorIndex != -1 && separatorIndex + 1 < end) {
                     end = separatorIndex + 1;
                     if (end != 0) {
                         curr = new NonEmptyTextLayout(true, text.substring(0, end - 1), font, frc);

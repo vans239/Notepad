@@ -20,6 +20,15 @@ import java.io.IOException;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
+
+//todo
+/**
+ * Check:
+ * check selection more than one screen
+ * check resize with caret at the end of text
+ * check russian symbols (open, save, open)
+ *
+ */
 public class NotepadStarter {
     private static final Logger log = Logger.getLogger(NotepadStarter.class);
 
@@ -47,6 +56,7 @@ public class NotepadStarter {
         controller.addChangeTextListener(new CaretListener(view));
         controller.addChangeTextListener(new PatchListener(view));
         controller.addChangeTextListener(new UndoListener(undoManager, view));
+        controller.addChangeTextListener(new ScrollListener(view));
         controller.addChangeTextListener(new UpdateListener(view, gui));
 
         gui.launchFrame();

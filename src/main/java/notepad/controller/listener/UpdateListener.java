@@ -6,6 +6,7 @@ import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.ChangeTextEvent;
+import notepad.controller.event.ScrollEvent;
 import notepad.text.TextModel;
 import notepad.view.NotepadFrame;
 import notepad.view.NotepadView;
@@ -27,7 +28,7 @@ public class UpdateListener implements ControllerListener {
 
     @Override
     public void actionPerformed(final NotepadController controller, final TextModel textModel, final ControllerEvent event) throws NotepadException {
-        if (event instanceof CaretEvent || event instanceof ChangeTextEvent){
+        if (event instanceof CaretEvent || event instanceof ChangeTextEvent || event instanceof ScrollEvent){
             notepadView.update();
         }
         if(event instanceof ChangeTextEvent){

@@ -13,7 +13,7 @@ import java.io.File;
  */
 public class BufferedTextModel extends AbstractTextModel {
     private static final Logger log = Logger.getLogger(BufferedTextModel.class);
-    private static final int BUFFER_SIZE = 30000;
+    private static final int BUFFER_SIZE = 100000;
     private static int bufferSize = BUFFER_SIZE;
 
     private AbstractTextModel textModel;

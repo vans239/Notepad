@@ -106,9 +106,9 @@ public class NotepadFrame extends JFrame {
         sFile = save;
         if (fileSave == JFileChooser.APPROVE_OPTION) {
             controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.SAVE, sFile.getSelectedFile().getPath()));
+            isEdited = false;
             log.info(String.format("File for save: [%s]", sFile.getSelectedFile().getPath()));
         }
-        isEdited = false;
     }
 
     public void oFile() {
@@ -117,7 +117,7 @@ public class NotepadFrame extends JFrame {
         oFile = open;
         if (fileOpen == JFileChooser.APPROVE_OPTION) {
             controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.OPEN, oFile.getSelectedFile().getPath()));
-            isEdited = true;
+            isEdited = false;
             log.info(String.format("File for open: [%s]", oFile.getSelectedFile().getPath()));
         }
     }

@@ -7,15 +7,15 @@ import notepad.controller.ControllerEvent;
  * vans239@gmail.com
  */
 public class CaretEvent implements ControllerEvent {
-    private int value;
+    private Number value;
     private CaretEventType type;
 
-    public CaretEvent(CaretEventType type, int value) {
+    public CaretEvent(CaretEventType type, Number value) {
         this.type = type;
         this.value = value;
     }
 
-    public int getValue() {
+    public Number getValue() {
         return value;
     }
 

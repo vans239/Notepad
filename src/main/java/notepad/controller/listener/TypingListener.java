@@ -10,6 +10,7 @@ import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.text.TextModel;
 import notepad.utils.Segment;
+import notepad.utils.SegmentL;
 import notepad.view.Mode;
 import notepad.view.NotepadFrame;
 import notepad.view.NotepadView;
@@ -123,17 +124,17 @@ public class TypingListener implements ControllerListener {
 
         @Override
         public void typed(char c) throws NotepadException {
-            Segment segment = view.getSelectionSegment();
-            textModel.remove(segment.getStart(), segment.getEnd() - segment.getStart());
+            SegmentL segment = view.getSelectionSegment();
+            textModel.remove(segment.getStart(), (int) (segment.getEnd() - segment.getStart()));
             textModel.insert(segment.getStart(), Character.toString(c));
-            controller.fireControllerEvent(new CaretEvent(GOTO, segment.getStart() + 1));
+            controller.fireControllerEvent(new CaretEvent(GOTO, (int) (segment.getStart() - view.getViewPosition() + 1)));
             end();
         }
 
         @Override
         public void delete() throws NotepadException {
-            Segment segment = view.getSelectionSegment();
-            textModel.remove(segment.getStart(), segment.getEnd() - segment.getStart());
+            SegmentL segment = view.getSelectionSegment();
+            textModel.remove(segment.getStart(), (int) (segment.getEnd() - segment.getStart()));
             controller.fireControllerEvent(new CaretEvent(GOTO, segment.getStart()));
             end();
         }

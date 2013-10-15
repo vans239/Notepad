@@ -7,12 +7,16 @@ import notepad.controller.NotepadController;
 import notepad.controller.adapter.KeyboardType;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
+import notepad.controller.event.ScrollEvent;
 import notepad.text.TextModel;
 import notepad.utils.Segment;
+import notepad.utils.SegmentL;
 import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;
+import notepad.view.textlayout.SmartTextLayout;
 import org.apache.log4j.Logger;
 
+import java.awt.font.TextHitInfo;
 import java.util.ArrayList;
 
 import static java.awt.event.KeyEvent.*;
@@ -29,8 +33,8 @@ public class ArrowListener implements ControllerListener {
         this.view = view;
     }
 
-    private int hit1;
-    private int hit2;
+    private long hit1;
+    private long hit2;
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
@@ -40,73 +44,90 @@ public class ArrowListener implements ControllerListener {
                 return;
             }
             log.debug(String.format("ViewPos [%d] EditPos[%d] CaretPos [%d]", view.getViewPosition(), view.getEditPosition(), view.getCaretPosition()));
-            int shift = 0;
+            if (ke.getKeyEvent().isShiftDown() && !view.isShowSelection()) {
+                hit1 = view.getEditPosition();
+            }
+            initCaretInfo();
             switch (ke.getKeyEvent().getKeyCode()) {
                 case VK_LEFT:
-                    shift = left();
+                    left(controller);
                     break;
                 case VK_RIGHT:
-                    shift = right();
+                    right(controller);
                     break;
                 case VK_DOWN:
-                    shift = down();
+                    down(controller);
                     break;
                 case VK_UP:
-                    shift = up();
+                    up(controller);
                     break;
+                default:
+                    return;
             }
-            if (ke.getKeyEvent().isShiftDown() && !view.isShowSelection()) {
-                hit1 = view.getCaretPosition();
-            }
-            if (shift != 0) {
-                if (!ke.getKeyEvent().isShiftDown()) {
-                    view.showSelectionSegment(false);
-                    controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
-                } else if (ke.getKeyEvent().isShiftDown()) {
-                    hit2 = view.getCaretPosition() + shift;
-                    view.updateSelectionSegment(new Segment(Math.min(hit1, hit2), Math.max(hit1, hit2)));
-                    view.showSelectionSegment(true);
-                    controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, hit2));
-                }
+
+            if (!ke.getKeyEvent().isShiftDown()) {
+                view.showSelectionSegment(false);
+            } else if (ke.getKeyEvent().isShiftDown()) {
+                hit2 = view.getEditPosition();
+                view.updateSelectionSegment(new SegmentL(Math.min(hit1, hit2), Math.max(hit1, hit2)));
+                view.showSelectionSegment(true);
             }
         }
     }
 
-    int left() {
-        return -1;
+    private int index;
+    private TextLayoutInfo caretLayoutInfo;
+    private ArrayList<TextLayoutInfo> layouts;
+
+    void left(NotepadController controller) {
+        if (view.getCaretPosition() > 0 ) {
+            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, -1));
+        } else {
+            controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.LEFT));
+        }
     }
 
-    int right() {
-        return 1;
+    void right(NotepadController controller) {
+        if (index != layouts.size() - 1 || (caretLayoutInfo.getPosition() + caretLayoutInfo.getLayout().getCharacterCount() - view.getCaretPosition() > 1)) {
+            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, 1));
+        } else {
+            controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.RIGHT));
+        }
     }
 
-    int down() {
-        ArrayList<TextLayoutInfo> layouts = view.getLayouts();
+    void down(NotepadController controller) {
+        if (index != layouts.size() - 1) {
+            TextLayoutInfo nextTextLayoutInfo = layouts.get(index + 1);
+            int shift = Math.min(
+                    nextTextLayoutInfo.getPosition() - view.getCaretPosition() + nextTextLayoutInfo.getLayout().getCharacterCount() - 1,
+                    caretLayoutInfo.getLayout().getCharacterCount());
+            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
+        } else {
+            controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.DOWN));
+        }
+    }
+
+    void up(NotepadController controller) {
+        if (index > 0) {
+            int shift = Math.min(-layouts.get(index - 1).getLayout().getCharacterCount(),
+                    -(view.getCaretPosition() - caretLayoutInfo.getPosition() + 1));
+            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, shift));
+        } else {
+            controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.UP));
+        }
+    }
+
+    private void initCaretInfo() {
+        layouts = view.getLayouts();
         for (int i = 0; i < layouts.size(); ++i) {
             TextLayoutInfo textLayoutInfo = layouts.get(i);
             if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
-                if (i == layouts.size()) {
-                    return textLayoutInfo.getLayout().getCharacterCount();
-                } else {
-                    return  textLayoutInfo.getLayout().getCharacterCount();//todo change
-                }
+                caretLayoutInfo = textLayoutInfo;
+                index = i;
+                return;
             }
         }
-        return 0;
+        throw new IllegalArgumentException("Not allowed state");
     }
 
-    int up() {
-        ArrayList<TextLayoutInfo> layouts = view.getLayouts();
-        for (int i = 0; i < layouts.size(); ++i) {
-            TextLayoutInfo textLayoutInfo = layouts.get(i);
-            if (view.caretInThisTextLayout(textLayoutInfo, i == layouts.size() - 1)) {
-                if (i > 0) {
-                    return Math.min(-layouts.get(i - 1).getLayout().getCharacterCount(),
-                            -(view.getCaretPosition() - textLayoutInfo.getPosition()));
-                }
-                return -textLayoutInfo.getLayout().getCharacterCount();
-            }
-        }
-        return 0;
-    }
 }

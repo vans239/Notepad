@@ -23,21 +23,22 @@ public class NotepadView extends JPanel {
     private static final Logger log = Logger.getLogger(NotepadView.class);
     private static final Font FONT = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
-    private final FontMetrics metrics = getFontMetrics(FONT);
     private static final Color CARET_COLOR = Color.red;
     private static final Color TEXT_COLOR = Color.black;
     private static final Color INV_TEXT_COLOR = Color.white;
     private static final Color BACKGROUND = Color.white;
     private static final Color INV_BACKGROUND = Color.blue;
+    private static final int MAX_LINE_LENGTH = 500;
 
+    private final FontMetrics metrics = getFontMetrics(FONT);
 
     private int maxLength;
     private long viewPosition = 0;
     private int caretPosition = 0;
-    private Segment selectionSegment;
+
+    private SegmentL selectionSegment;
 
     private boolean isShowSelection = false;
-
     private String text;
     private NotepadController controller;
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
@@ -59,7 +60,7 @@ public class NotepadView extends JPanel {
         return isShowSelection;
     }
 
-    public void updateSelectionSegment(Segment draggedSegment) {
+    public void updateSelectionSegment(SegmentL draggedSegment) {
         this.selectionSegment = draggedSegment;
     }
 
@@ -71,10 +72,11 @@ public class NotepadView extends JPanel {
         isShowSelection = isShow;
     }
 
-    public Segment getSelectionSegment() {
+    public SegmentL getSelectionSegment() {
         return selectionSegment;
     }
 
+    //todo viewposition set to 0 after open new file!
     public void updateMaxLength() {
         //todo find real coeff
         maxLength = 3 * (getSize().width / getFontMetrics(FONT).charWidth('a')) * (getSize().height / getFontMetrics(FONT).getHeight()) / 2;
@@ -92,51 +94,107 @@ public class NotepadView extends JPanel {
         return viewPosition + caretPosition;
     }
 
-    public void scrollUp(){
-        log.info("scroll up");
+    public int scrollNext() throws NotepadException {
+        TextLayoutInfo textLayoutInfo = layouts.get(0);
+        SmartTextLayout nextTextLayout = getNextTextLayout();
+        viewPosition += textLayoutInfo.getLayout().getCharacterCount();
+        caretPosition -= textLayoutInfo.getLayout().getCharacterCount();
+        return nextTextLayout.getCharacterCount();
     }
 
-    public void scrollDown(){
-        log.info("scroll down");
+    public int scrollPrev() throws NotepadException {
+        SmartTextLayout prevTextLayout = getPrevTextLayout();
+        viewPosition -= prevTextLayout.getCharacterCount();
+        return prevTextLayout.getCharacterCount();
+    }
+    public void scrollLeft() throws NotepadException {
+        if (viewPosition == 0) {
+            return;
+        }
+        scrollPrev();
+        caretPosition--;
     }
 
-    public SegmentL getAvailableScrollShift() throws NotepadException {
-        return new SegmentL(-viewPosition, Math.max(0, controller.length() - viewPosition - 1));
+    public void scrollRight() throws NotepadException {
+        if (getViewPosition() + text.length() == controller.length()) {
+            caretPosition = text.length();
+            return;
+        }
+        scrollNext();
+        caretPosition++;
     }
+
+    public void scrollUp() throws NotepadException {
+        if (viewPosition == 0) {
+            return;
+        }
+        int prevCount = scrollPrev();
+        caretPosition = Math.min(caretPosition, prevCount - 1);
+    }
+
+    public void scrollDown() throws NotepadException {
+        if (getViewPosition() + text.length() == controller.length()) {
+            return;
+        }
+        int nextCount = scrollNext();
+        int newTextLength = text.length() - layouts.get(0).getLayout().getCharacterCount() + nextCount;
+        int currLineLength = layouts.get(layouts.size() - 1).getLayout().getCharacterCount();
+        if(newTextLength - getCaretPosition() - 1 < currLineLength){
+            caretPosition += newTextLength - getCaretPosition() - 1;
+            if(getEditPosition()== controller.length() - 1){
+                caretPosition++;
+            }
+        } else {
+            caretPosition += currLineLength;
+        }
+    }
+
+    public SmartTextLayout getPrevTextLayout() throws NotepadException {
+        long startText = Math.max(getViewPosition() - MAX_LINE_LENGTH, 0);
+        String prevText = controller.get(startText, (int) (viewPosition - startText));
+        int from;
+        if(prevText.lastIndexOf('\n') == prevText.length() - 1){
+            from = prevText.substring(0, prevText.length() - 1).lastIndexOf('\n') + 1;
+        } else {
+            from = prevText.lastIndexOf('\n') + 1;
+        }
+        prevText = prevText.substring(from);
+
+        SmartTextLayout textLayout = null;
+        final MonospacedLineBreakMeasurer lineMeasurer =
+                new MonospacedLineBreakMeasurer(prevText, getFontMetrics(FONT), frc, getWidth());
+        for (final SmartTextLayout stl : lineMeasurer) {
+            textLayout = stl;
+        }
+        return textLayout;
+    }
+
+    public SmartTextLayout getNextTextLayout() throws NotepadException {
+        final String nextText = controller.get(getViewPosition() + text.length(),
+                (int) Math.min(MAX_LINE_LENGTH, controller.length() - (getViewPosition() + text.length())));
+        final MonospacedLineBreakMeasurer lineMeasurer =
+                new MonospacedLineBreakMeasurer(nextText, getFontMetrics(FONT), frc, getWidth());
+        return lineMeasurer.iterator().next();
+    }
+
+    //todo left, right on caret shift
 
     public void updateCaretShift(final int shift) throws NotepadException {
         final Segment segment = getAvailableCaretShift();
-        if (segment.in(shift)) {
-            caretPosition += shift;
-        } else {
-            //todo shift should be small now
-            final SegmentL segmentL = getAvailableScrollShift();
-            int realShift;
-            if(shift > 0){
-                realShift = layouts.get(0).getLayout().getCharacterCount();
-            } else {
-                realShift = -layouts.get(0).getLayout().getCharacterCount();
-            }
-            viewPosition += segmentL.nearest(realShift);
-            caretPosition = (int) (Math.min(viewPosition + caretPosition - realShift + shift, controller.length()) - viewPosition);
+        if (!segment.in(shift)) {
+            throw new IllegalArgumentException();
         }
-        if(caretPosition > text.length()){
-            log.info("aa");
-        }
+        caretPosition += shift;
         log.info(String.format("New caret pos[%d]", caretPosition));
     }
 
-    public void updateCaretGoTo(final int value) {
-        caretPosition = value;
+    public void updateCaretGoTo(final long value) {
+        caretPosition = Long.valueOf(value - viewPosition).intValue();
         log.info(String.format("New caret pos[%d]", caretPosition));
     }
 
     public ArrayList<TextLayoutInfo> getLayouts() {
         return layouts;
-    }
-
-    public boolean isAvailableShiftCaret(final int shift) {
-        return new Segment(0, text.length()).in(caretPosition + shift);
     }
 
     public Segment getAvailableCaretShift() {
@@ -192,6 +250,7 @@ public class NotepadView extends JPanel {
             }
         }
         text = text.substring(0, position);
+        caretPosition = Math.min(text.length(), caretPosition); // in case resize
     }
 
     private void drawLayouts(Graphics2D g2d) {
@@ -218,23 +277,19 @@ public class NotepadView extends JPanel {
     }
 
     private void drawDragged(Graphics2D g2d) {
-        int draggedFrom = selectionSegment.getStart();
-        int draggedTo = selectionSegment.getEnd();
-
         for (int i = 0; i < layouts.size(); ++i) {
             final TextLayoutInfo layoutInfo = layouts.get(i);
-            final Segment segment =
-                    new Segment(layoutInfo.getPosition(), layoutInfo.getPosition() + layoutInfo.getLayout().getCharacterCount());
-            if (draggedFrom < segment.getEnd()) {
-                g2d.translate(layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
-                final Segment blackboxSegment =
-                        new Segment(segment.nearest(draggedFrom) - layoutInfo.getPosition(), segment.nearest(draggedTo) - layoutInfo.getPosition());
-                if (blackboxSegment.getEnd() != blackboxSegment.getStart()) {
-                    layoutInfo.getLayout().addAttribute(TextAttribute.FOREGROUND, INV_TEXT_COLOR, blackboxSegment.getStart(), blackboxSegment.getEnd() );
-                    layoutInfo.getLayout().addAttribute(TextAttribute.BACKGROUND, INV_BACKGROUND, blackboxSegment.getStart(), blackboxSegment.getEnd() );
-                }
-                g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
+            final SegmentL segment =
+                    new SegmentL(layoutInfo.getPosition() + viewPosition, viewPosition + layoutInfo.getPosition() + layoutInfo.getLayout().getCharacterCount());
+            g2d.translate(layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
+            final SegmentL intersection =
+                    segment.intersection(selectionSegment);
+            final Segment blackboxSegment = new Segment((int) (intersection.getStart() - layoutInfo.getPosition() - viewPosition), (int) (intersection.getEnd() - layoutInfo.getPosition() - viewPosition));
+            if (blackboxSegment.getEnd() != blackboxSegment.getStart()) {
+                layoutInfo.getLayout().addAttribute(TextAttribute.FOREGROUND, INV_TEXT_COLOR, blackboxSegment.getStart(), blackboxSegment.getEnd());
+                layoutInfo.getLayout().addAttribute(TextAttribute.BACKGROUND, INV_BACKGROUND, blackboxSegment.getStart(), blackboxSegment.getEnd());
             }
+            g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
         }
     }
 

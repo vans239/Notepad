@@ -26,9 +26,9 @@ public class CaretListener implements ControllerListener {
         if (event instanceof CaretEvent) {
             CaretEvent ce = (CaretEvent) event;
             if (ce.getType() == CaretEvent.CaretEventType.SHIFT) {
-                notepadView.updateCaretShift(ce.getValue());
+                notepadView.updateCaretShift(ce.getValue().intValue());
             } else {
-                notepadView.updateCaretGoTo(ce.getValue());
+                notepadView.updateCaretGoTo(ce.getValue().longValue());
             }
         }
     }

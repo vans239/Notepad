@@ -8,6 +8,7 @@ import notepad.controller.event.CaretEvent;
 import notepad.controller.event.MouseEvent;
 import notepad.text.TextModel;
 import notepad.utils.Segment;
+import notepad.utils.SegmentL;
 import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;
 import org.apache.log4j.Logger;
@@ -32,8 +33,8 @@ public class MouseListener implements ControllerListener {
         this.view = view;
     }
 
-    private int hit1;
-    private int hit2;
+    private long hit1;
+    private long hit2;
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event)
@@ -51,10 +52,11 @@ public class MouseListener implements ControllerListener {
                 hit1 = getHitIndex(mouseEvent.getEvent().getPoint());
                 hit2 = hit1;
             } else if (mouseEvent.getType().equals(RELEASED) || mouseEvent.getType().equals(DRAGGED)) {
-                hit2 = getHitIndex(mouseEvent.getEvent().getPoint());
-                view.updateSelectionSegment(new Segment(Math.min(hit1, hit2), Math.max(hit1, hit2)));
+                int caretHit = getHitIndex(mouseEvent.getEvent().getPoint());
+                hit2 = view.getViewPosition() + caretHit ;
+                view.updateSelectionSegment(new SegmentL(Math.min(hit1, hit2), Math.max(hit1, hit2)));
                 view.showSelectionSegment(true);
-                controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, hit2));
+                controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, caretHit));
             }
         }
     }

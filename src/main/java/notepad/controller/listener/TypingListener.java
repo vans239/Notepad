@@ -7,6 +7,7 @@ import notepad.controller.NotepadController;
 import notepad.controller.adapter.KeyboardType;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
+import notepad.controller.event.ScrollEvent;
 import notepad.text.TextModel;
 import notepad.utils.SegmentL;
 import notepad.view.Mode;
@@ -126,6 +127,7 @@ public class TypingListener implements ControllerListener {
             SegmentL segment = view.getSelectionSegment();
             textModel.remove(segment.getStart(), (int) (segment.getEnd() - segment.getStart()));
             textModel.insert(segment.getStart(), Character.toString(c));
+            scrollToPosition(segment.getStart());
             controller.fireControllerEvent(new CaretEvent(GOTO, (int) (segment.getStart() - view.getViewPosition() + 1)));
             end();
         }
@@ -134,6 +136,7 @@ public class TypingListener implements ControllerListener {
         public void delete() throws NotepadException {
             SegmentL segment = view.getSelectionSegment();
             textModel.remove(segment.getStart(), (int) (segment.getEnd() - segment.getStart()));
+            scrollToPosition(segment.getStart());
             controller.fireControllerEvent(new CaretEvent(GOTO, segment.getStart()));
             end();
         }
@@ -142,7 +145,12 @@ public class TypingListener implements ControllerListener {
         public void backSpace() throws NotepadException {
             delete();
         }
-        //todo delete selection more than screen
+        private void scrollToPosition(long pos){
+            while(view.getViewPosition() > pos){
+                controller.fireControllerEvent(new CaretEvent(GOTO, view.getViewPosition()));
+                controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.UP));
+            }
+        }
     }
 }
 

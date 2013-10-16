@@ -4,11 +4,12 @@ import notepad.NotepadException;
 import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
+import notepad.controller.event.CaretEvent;
 import notepad.controller.event.PatchEvent;
+import notepad.controller.event.ScrollEvent;
 import notepad.manager.Context;
 import notepad.text.TextModel;
 import notepad.view.NotepadView;
-import org.apache.log4j.Logger;
 
 /**
  * Evgeny Vanslov
@@ -26,7 +27,8 @@ public class PatchListener implements ControllerListener {
         if (event instanceof PatchEvent) {
             PatchEvent pe = (PatchEvent) event;
             final Context context = pe.getPatch().getContext();
-            view.updateCaretGoTo(context.getCaretPosition());
+            controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.GOTO, context.getViewPosition()));
+            controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.GOTO, context.getViewPosition() + context.getCaretPosition()));
 
             if (pe.getPatchType() == PatchEvent.PatchType.REDO) {
                 pe.getPatch().getCte().apply(textModel);

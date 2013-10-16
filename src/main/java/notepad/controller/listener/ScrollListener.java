@@ -34,6 +34,8 @@ public class ScrollListener implements ControllerListener {
                 notepadView.scrollRight();
             } else if (LEFT == se.getScroll()) {
                 notepadView.scrollLeft();
+            }else if(GOTO == se.getScroll()){
+                notepadView.scrollGoto(se.getViewPosition());
             }
         }
     }

@@ -10,9 +10,20 @@ import org.apache.log4j.Logger;
 public class ScrollEvent implements ControllerEvent {
     private static final Logger log = Logger.getLogger(ScrollEvent.class);
     private Scroll scroll;
+    private long viewPosition;
+
+    public ScrollEvent(Scroll scroll, long viewPosition) {
+
+        this.scroll = scroll;
+        this.viewPosition = viewPosition;
+    }
 
     public ScrollEvent(Scroll scroll) {
         this.scroll = scroll;
+    }
+
+    public long getViewPosition() {
+        return viewPosition;
     }
 
     public Scroll getScroll() {
@@ -27,6 +38,6 @@ public class ScrollEvent implements ControllerEvent {
     }
 
     public static enum Scroll {
-        UP, DOWN, LEFT, RIGHT
+        UP, DOWN, LEFT, RIGHT, GOTO
     }
 }

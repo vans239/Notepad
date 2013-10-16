@@ -215,6 +215,10 @@ public class NotepadView extends JPanel {
         drawCaret(g2d);
     }
 
+    public int getLengthShowed(){
+        return text.length();
+    }
+
     public void update() {
         try {
             updateText();
@@ -298,5 +302,9 @@ public class NotepadView extends JPanel {
         int to = from + layoutInfo.getLayout().getCharacterCount();
         return (caretPosition >= from && caretPosition < to)
                 || (caretPosition >= from && isLastLayout);
+    }
+
+    public void scrollGoto(long viewPosition) {
+        this.viewPosition = viewPosition;
     }
 }

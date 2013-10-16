@@ -3,7 +3,6 @@ package notepad.view;
 import notepad.view.textlayout.SmartTextLayout;
 
 import java.awt.*;
-import java.awt.font.TextLayout;
 
 /**
  * Evgeny Vanslov

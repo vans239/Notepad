@@ -22,12 +22,12 @@ import java.io.IOException;
  */
 
 //todo
+
 /**
  * Check:
  * check selection more than one screen
  * check resize with caret at the end of text
  * check russian symbols (open, save, open)
- *
  */
 public class NotepadStarter {
     private static final Logger log = Logger.getLogger(NotepadStarter.class);

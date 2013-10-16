@@ -1,12 +1,9 @@
 package notepad.view.textlayout;
 
 import org.apache.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
-import java.awt.font.FontRenderContext;
 import java.awt.font.TextHitInfo;
-import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.text.AttributedCharacterIterator;
 
@@ -24,7 +21,7 @@ public class EmptyTextLayout implements SmartTextLayout {
         return isNewLine ? 1 : 0;
     }
 
-    public EmptyTextLayout(boolean isNewLine, FontMetrics metrics){
+    public EmptyTextLayout(boolean isNewLine, FontMetrics metrics) {
         this.isNewLine = isNewLine;
         this.metrics = metrics;
     }
@@ -36,7 +33,7 @@ public class EmptyTextLayout implements SmartTextLayout {
 
     @Override
     public Shape[] getCaretShapes(int index) {
-        if(index != 0){
+        if (index != 0) {
             throw new IllegalArgumentException("No such element");
         }
         final Shape shapes[] = new Shape[1];

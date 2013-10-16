@@ -6,7 +6,6 @@ import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
 import notepad.controller.event.PatchEvent;
 import notepad.manager.Context;
-import notepad.text.ChangeTextEvent;
 import notepad.text.TextModel;
 import notepad.view.NotepadView;
 import org.apache.log4j.Logger;

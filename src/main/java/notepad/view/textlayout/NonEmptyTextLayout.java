@@ -1,6 +1,5 @@
 package notepad.view.textlayout;
 
-import notepad.utils.Segment;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
@@ -20,8 +19,9 @@ public class NonEmptyTextLayout implements SmartTextLayout {
     private TextLayout textLayout;
     private AttributedString attributedString;
     private FontRenderContext frc;
-    public NonEmptyTextLayout(boolean isNewLine, String text, Font f, FontRenderContext frc){
-        if(isNewLine){
+
+    public NonEmptyTextLayout(boolean isNewLine, String text, Font f, FontRenderContext frc) {
+        if (isNewLine) {
             text = text + " ";
         }
         this.frc = frc;

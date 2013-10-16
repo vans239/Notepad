@@ -53,6 +53,7 @@ public class NotepadFrame extends JFrame {
             }
         });
     }
+
     public void edited() {
         isEdited = true;
     }
@@ -87,12 +88,12 @@ public class NotepadFrame extends JFrame {
 
     public class ListenMenuOpen implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            if(isEdited){
+            if (isEdited) {
                 int ans = JOptionPane.showConfirmDialog(
                         NotepadFrame.this, "Do you want to save changes?",
                         "Notepad+",
                         JOptionPane.YES_NO_OPTION);
-                if(ans == JOptionPane.YES_OPTION){
+                if (ans == JOptionPane.YES_OPTION) {
                     sFile();
                 }
             }

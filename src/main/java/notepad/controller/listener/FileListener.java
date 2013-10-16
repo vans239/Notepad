@@ -33,7 +33,7 @@ public class FileListener implements ControllerListener {
             FileEvent ov = (FileEvent) event;
             final File file = new File(ov.getFilePath());
             if (ov.getFileStatus() == OPEN) {
-                if(textModel != null){
+                if (textModel != null) {
                     textModel.close();
                 }
                 final TextModel newTextModel = fileManager.open(file);

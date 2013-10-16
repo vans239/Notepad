@@ -15,9 +15,10 @@ public interface TextModel {
         Methods with logging of changes
      */
     void insert(long pos, String s) throws NotepadException;
-    void replace(long pos, String s) throws NotepadException;
-    void remove(long pos, int length) throws NotepadException;
 
+    void replace(long pos, String s) throws NotepadException;
+
+    void remove(long pos, int length) throws NotepadException;
 
 
     String get(long pos, int length) throws NotepadException;
@@ -29,7 +30,6 @@ public interface TextModel {
     void flush(File file) throws NotepadException;
 
     void close() throws NotepadException;
-
 
 
 }

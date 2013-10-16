@@ -1,6 +1,5 @@
 package notepad.manager.undo;
 
-import notepad.manager.Context;
 import notepad.manager.Patch;
 import notepad.text.ChangeTextEvent;
 import notepad.text.event.InsertEvent;
@@ -43,7 +42,7 @@ public class InsertMerger implements Merger<Patch> {
         InsertEvent lastIE = (InsertEvent) lastEvent;
         InsertEvent beforeIE = (InsertEvent) beforeEvent;
         if (lastIE.getPos() == beforeIE.getPos() + beforeIE.getInserted().length()) {
-            ChangeTextEvent patchEvent =  new InsertEvent(beforeIE.getPos(), beforeIE.getInserted() + lastIE.getInserted());
+            ChangeTextEvent patchEvent = new InsertEvent(beforeIE.getPos(), beforeIE.getInserted() + lastIE.getInserted());
             return new Patch(before.getContext(), patchEvent);
         }
         throw new IllegalArgumentException();

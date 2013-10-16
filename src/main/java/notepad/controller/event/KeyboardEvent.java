@@ -2,7 +2,6 @@ package notepad.controller.event;
 
 import notepad.controller.ControllerEvent;
 import notepad.controller.adapter.KeyboardType;
-import notepad.controller.adapter.MouseType;
 
 import java.awt.event.KeyEvent;
 

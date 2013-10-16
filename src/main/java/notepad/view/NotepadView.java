@@ -107,6 +107,7 @@ public class NotepadView extends JPanel {
         viewPosition -= prevTextLayout.getCharacterCount();
         return prevTextLayout.getCharacterCount();
     }
+
     public void scrollLeft() throws NotepadException {
         if (viewPosition == 0) {
             return;
@@ -139,9 +140,9 @@ public class NotepadView extends JPanel {
         int nextCount = scrollNext();
         int newTextLength = text.length() - layouts.get(0).getLayout().getCharacterCount() + nextCount;
         int currLineLength = layouts.get(layouts.size() - 1).getLayout().getCharacterCount();
-        if(newTextLength - getCaretPosition() - 1 < currLineLength){
+        if (newTextLength - getCaretPosition() - 1 < currLineLength) {
             caretPosition += newTextLength - getCaretPosition() - 1;
-            if(getEditPosition()== controller.length() - 1){
+            if (getEditPosition() == controller.length() - 1) {
                 caretPosition++;
             }
         } else {
@@ -153,7 +154,7 @@ public class NotepadView extends JPanel {
         long startText = Math.max(getViewPosition() - MAX_LINE_LENGTH, 0);
         String prevText = controller.get(startText, (int) (viewPosition - startText));
         int from;
-        if(prevText.lastIndexOf('\n') == prevText.length() - 1){
+        if (prevText.lastIndexOf('\n') == prevText.length() - 1) {
             from = prevText.substring(0, prevText.length() - 1).lastIndexOf('\n') + 1;
         } else {
             from = prevText.lastIndexOf('\n') + 1;

@@ -5,7 +5,6 @@ import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
 import notepad.controller.adapter.KeyboardType;
-import notepad.controller.adapter.MouseType;
 import notepad.controller.event.ChangeTextEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.controller.event.PatchEvent;

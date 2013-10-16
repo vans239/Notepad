@@ -5,11 +5,9 @@ import notepad.controller.ControllerEvent;
 import notepad.controller.ControllerListener;
 import notepad.controller.NotepadController;
 import notepad.controller.adapter.KeyboardType;
-import notepad.controller.adapter.MouseType;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.text.TextModel;
-import notepad.utils.Segment;
 import notepad.utils.SegmentL;
 import notepad.view.Mode;
 import notepad.view.NotepadFrame;
@@ -41,7 +39,7 @@ public class TypingListener implements ControllerListener {
         if (event instanceof KeyboardEvent) {
             final KeyboardEvent ke = (KeyboardEvent) event;
             Handler handler;
-            if(view.isShowSelection()){
+            if (view.isShowSelection()) {
                 handler = new SelectionHandler(textModel, controller);
             } else {
                 handler = new CaretHandler(textModel, controller);
@@ -118,7 +116,7 @@ public class TypingListener implements ControllerListener {
             this.controller = controller;
         }
 
-        public void end(){
+        public void end() {
             view.showSelectionSegment(false);
         }
 

@@ -26,7 +26,7 @@ public class ScrollEvent implements ControllerEvent {
                 '}';
     }
 
-    public static enum  Scroll {
+    public static enum Scroll {
         UP, DOWN, LEFT, RIGHT
     }
 }

@@ -151,7 +151,7 @@ public class Utf8FlushModelText extends AbstractTextModel {
     public void doRemove(long pos, int length) throws NotepadException {
         this.length -= length;
         long bytePos = charPosToBytePos(pos);
-        int byteLength = (int) ( charPosToBytePos(pos + length) - bytePos);
+        int byteLength = (int) (charPosToBytePos(pos + length) - bytePos);
         shiftAndChangeSize(bytePos + byteLength, -byteLength);
     }
 

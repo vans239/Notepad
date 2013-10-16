@@ -50,11 +50,11 @@ public class SegmentL {
         return in(that.start) && in(that.end);
     }
 
-    public SegmentL intersection(SegmentL that){
+    public SegmentL intersection(SegmentL that) {
         long newStart = Math.max(this.start, that.start);
         long newEnd = Math.min(this.end, that.end);
-        if(newEnd < newStart){
-            return new SegmentL(0,0);
+        if (newEnd < newStart) {
+            return new SegmentL(0, 0);
         }
         return new SegmentL(newStart, newEnd);
     }

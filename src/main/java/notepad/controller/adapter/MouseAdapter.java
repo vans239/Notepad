@@ -45,7 +45,7 @@ public class MouseAdapter {
         component.addMouseMotionListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-               controller.fireControllerEvent(new notepad.controller.event.MouseEvent(DRAGGED, e));
+                controller.fireControllerEvent(new notepad.controller.event.MouseEvent(DRAGGED, e));
             }
         });
     }

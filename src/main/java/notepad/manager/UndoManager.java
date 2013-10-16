@@ -1,13 +1,11 @@
 package notepad.manager;
 
 import notepad.manager.undo.Merger;
-import notepad.text.ChangeTextEvent;
 import notepad.utils.BoundedStack;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Evgeny Vanslov

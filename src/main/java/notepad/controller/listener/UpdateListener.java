@@ -28,10 +28,10 @@ public class UpdateListener implements ControllerListener {
 
     @Override
     public void actionPerformed(final NotepadController controller, final TextModel textModel, final ControllerEvent event) throws NotepadException {
-        if (event instanceof CaretEvent || event instanceof ChangeTextEvent || event instanceof ScrollEvent){
+        if (event instanceof CaretEvent || event instanceof ChangeTextEvent || event instanceof ScrollEvent) {
             notepadView.update();
         }
-        if(event instanceof ChangeTextEvent){
+        if (event instanceof ChangeTextEvent) {
             notepadFrame.edited();
         }
     }

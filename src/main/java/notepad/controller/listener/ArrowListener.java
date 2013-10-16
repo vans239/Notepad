@@ -9,14 +9,11 @@ import notepad.controller.event.CaretEvent;
 import notepad.controller.event.KeyboardEvent;
 import notepad.controller.event.ScrollEvent;
 import notepad.text.TextModel;
-import notepad.utils.Segment;
 import notepad.utils.SegmentL;
 import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;
-import notepad.view.textlayout.SmartTextLayout;
 import org.apache.log4j.Logger;
 
-import java.awt.font.TextHitInfo;
 import java.util.ArrayList;
 
 import static java.awt.event.KeyEvent.*;
@@ -80,7 +77,7 @@ public class ArrowListener implements ControllerListener {
     private ArrayList<TextLayoutInfo> layouts;
 
     private void left(NotepadController controller) {
-        if (view.getCaretPosition() > 0 ) {
+        if (view.getCaretPosition() > 0) {
             controller.fireControllerEvent(new CaretEvent(CaretEvent.CaretEventType.SHIFT, -1));
         } else {
             controller.fireControllerEvent(new ScrollEvent(ScrollEvent.Scroll.LEFT));

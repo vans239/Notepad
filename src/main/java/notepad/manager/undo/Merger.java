@@ -1,7 +1,5 @@
 package notepad.manager.undo;
 
-import notepad.text.ChangeTextEvent;
-
 /**
  * Evgeny Vanslov
  * vans239@gmail.com

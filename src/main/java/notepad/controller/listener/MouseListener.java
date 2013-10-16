@@ -7,7 +7,6 @@ import notepad.controller.NotepadController;
 import notepad.controller.event.CaretEvent;
 import notepad.controller.event.MouseEvent;
 import notepad.text.TextModel;
-import notepad.utils.Segment;
 import notepad.utils.SegmentL;
 import notepad.view.NotepadView;
 import notepad.view.TextLayoutInfo;

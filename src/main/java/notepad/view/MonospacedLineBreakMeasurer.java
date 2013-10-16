@@ -14,7 +14,7 @@ import java.util.Iterator;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout>{
+public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout> {
     private static final Logger log = Logger.getLogger(MonospacedLineBreakMeasurer.class);
     private static final String lineSeparator = "\n";
 
@@ -55,10 +55,10 @@ public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout>{
                 endLine = false;
                 int end;
                 SmartTextLayout curr;
-                if(text.isEmpty()){
+                if (text.isEmpty()) {
                     return new EmptyTextLayout(false, fontMetrics);
                 }
-                if("\n".equals(text)){
+                if ("\n".equals(text)) {
                     text = "";
                     return new EmptyTextLayout(true, fontMetrics);
                 }

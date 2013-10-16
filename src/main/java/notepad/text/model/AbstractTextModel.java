@@ -20,9 +20,9 @@ import java.util.List;
 public abstract class AbstractTextModel implements TextModel {
     private static final Logger log = Logger.getLogger(AbstractTextModel.class);
 
-     /*
-        Methods without logging
-     */
+    /*
+       Methods without logging
+    */
     public abstract void doInsert(long pos, String s) throws NotepadException;
 
     public abstract void doReplace(long pos, String s) throws NotepadException;

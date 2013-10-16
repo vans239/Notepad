@@ -2,7 +2,6 @@ package notepad.controller.event;
 
 import notepad.controller.ControllerEvent;
 import notepad.manager.Patch;
-import notepad.text.ChangeTextEvent;
 
 /**
  * Evgeny Vanslov

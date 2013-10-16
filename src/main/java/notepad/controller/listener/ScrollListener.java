@@ -16,7 +16,6 @@ import static notepad.controller.event.ScrollEvent.Scroll.*;
  * vans239@gmail.com
  */
 public class ScrollListener implements ControllerListener {
-    private static final Logger log = Logger.getLogger(ScrollListener.class);
     private NotepadView notepadView;
 
     public ScrollListener(NotepadView notepadView) {

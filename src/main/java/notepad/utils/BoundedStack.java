@@ -6,6 +6,11 @@ import java.util.ArrayDeque;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
+
+/**
+ * Stack with limited size. When stack become full, last elem will be deleted
+ * @param <T>
+ */
 public class BoundedStack<T> {
     private int maxElem;
     private ArrayDeque<T> deque;

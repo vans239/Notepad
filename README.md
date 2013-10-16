@@ -10,4 +10,5 @@ change insert/replace modes - INSERT
 undo - ctrl+z
 redo - ctrl+y
 
-File encoding UTF-8
+File encoding UTF-8.
+This application isn't thread-safe.

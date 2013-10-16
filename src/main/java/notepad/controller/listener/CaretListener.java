@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
  * vans239@gmail.com
  */
 public class CaretListener implements ControllerListener {
-    private static final Logger log = Logger.getLogger(CaretListener.class);
     private NotepadView notepadView;
 
     public CaretListener(NotepadView notepadView) {

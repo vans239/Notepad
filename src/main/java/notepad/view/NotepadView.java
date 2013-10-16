@@ -2,6 +2,7 @@ package notepad.view;
 
 import notepad.NotepadException;
 import notepad.controller.NotepadController;
+import notepad.controller.event.ExceptionEvent;
 import notepad.utils.Segment;
 import notepad.utils.SegmentL;
 import notepad.view.textlayout.SmartTextLayout;
@@ -76,7 +77,6 @@ public class NotepadView extends JPanel {
         return selectionSegment;
     }
 
-    //todo viewposition set to 0 after open new file!
     public void updateMaxLength() {
         //todo find real coeff
         maxLength = 3 * (getSize().width / getFontMetrics(FONT).charWidth('a')) * (getSize().height / getFontMetrics(FONT).getHeight()) / 2;
@@ -178,8 +178,6 @@ public class NotepadView extends JPanel {
         return lineMeasurer.iterator().next();
     }
 
-    //todo left, right on caret shift
-
     public void updateCaretShift(final int shift) throws NotepadException {
         final Segment segment = getAvailableCaretShift();
         if (!segment.in(shift)) {
@@ -221,7 +219,7 @@ public class NotepadView extends JPanel {
         try {
             updateText();
         } catch (NotepadException e) {
-            log.error("Can't update text for view", e);
+            controller.fireControllerEvent(new ExceptionEvent("Can't update text for view", e));
         }
         repaint();
     }

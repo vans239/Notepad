@@ -21,7 +21,6 @@ public class MouseEvent implements ControllerEvent {
     }
 
     public MouseType getType() {
-
         return type;
     }
 }

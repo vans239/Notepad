@@ -8,6 +8,8 @@ target
 
 # Idea system files #
 *.iws
+.idea
+*.iml
 
 # Compiled source #
 ###################

@@ -21,17 +21,14 @@ import java.io.IOException;
  * vans239@gmail.com
  */
 
-//todo
-
 /**
- * Check:
+ *
+ * Testing:
  * check selection more than one screen
  * check resize with caret at the end of text
  * check russian symbols (open, save, open)
  */
 public class NotepadStarter {
-    private static final Logger log = Logger.getLogger(NotepadStarter.class);
-
     public static void main(String args[]) throws IOException, NotepadException {
         final FileManager fileManager = new FileManager();
         final NotepadController controller = new NotepadController();
@@ -57,6 +54,7 @@ public class NotepadStarter {
         controller.addChangeTextListener(new PatchListener(view));
         controller.addChangeTextListener(new UndoListener(undoManager, view));
         controller.addChangeTextListener(new ScrollListener(view));
+        controller.addChangeTextListener(new ExceptionListener());
         controller.addChangeTextListener(new UpdateListener(view, gui));
 
         gui.launchFrame();

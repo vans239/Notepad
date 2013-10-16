@@ -47,6 +47,7 @@ public class TypingListener implements ControllerListener {
 
             if (ke.getType().equals(KeyboardType.TYPED)) {
                 char keyChar = ke.getKeyEvent().getKeyChar();
+                //todo check is char printable real
                 if (keyChar != 8 && keyChar != '\u007f' && keyChar != '\u001A' && keyChar != '\u0019') {
                     handler.typed(keyChar);
                 }
@@ -141,5 +142,7 @@ public class TypingListener implements ControllerListener {
         public void backSpace() throws NotepadException {
             delete();
         }
+        //todo delete selection more than screen
     }
 }
+

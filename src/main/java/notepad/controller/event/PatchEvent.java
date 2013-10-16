@@ -12,7 +12,6 @@ public class PatchEvent implements ControllerEvent {
     private Patch patch;
 
     public PatchEvent(PatchType patchType, Patch patch) {
-
         this.patchType = patchType;
         this.patch = patch;
     }
@@ -28,5 +27,4 @@ public class PatchEvent implements ControllerEvent {
     public enum PatchType {
         UNDO, REDO
     }
-
 }

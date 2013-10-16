@@ -11,15 +11,13 @@ import java.awt.event.*;
 public class NotepadFrame extends JFrame {
     private static final Logger log = Logger.getLogger(NotepadFrame.class);
 
-    private int fileSave;
-    private int fileOpen;
-    private JFileChooser sFile;
-    private JFileChooser oFile;
-    private NotepadController controller;
+    //in future revisions should take path from *.properties
+    private static final String DEFAULT_PATH = "X:\\Dropbox\\programms\\Java\\Notepad+";
 
+    private NotepadController controller;
     private Mode mode = Mode.INSERT;
     private JMenu modeMenu = new JMenu(mode.name());
-    private String currentDirectoryPath = "X:\\Dropbox\\programms\\Java\\Notepad+";
+    private String currentDirectoryPath = DEFAULT_PATH;
     private boolean isEdited = false;
 
     public NotepadFrame(NotepadController controller, NotepadView notepadView) {
@@ -103,23 +101,21 @@ public class NotepadFrame extends JFrame {
 
     public void sFile() {
         JFileChooser save = new JFileChooser(currentDirectoryPath);
-        fileSave = save.showSaveDialog(this);
-        sFile = save;
+        int fileSave = save.showSaveDialog(this);
         if (fileSave == JFileChooser.APPROVE_OPTION) {
-            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.SAVE, sFile.getSelectedFile().getPath()));
+            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.SAVE, save.getSelectedFile().getPath()));
             isEdited = false;
-            log.info(String.format("File for save: [%s]", sFile.getSelectedFile().getPath()));
+            log.info(String.format("File for save: [%s]", save.getSelectedFile().getPath()));
         }
     }
 
     public void oFile() {
         JFileChooser open = new JFileChooser(currentDirectoryPath);
-        fileOpen = open.showOpenDialog(this);
-        oFile = open;
+        int fileOpen = open.showOpenDialog(this);
         if (fileOpen == JFileChooser.APPROVE_OPTION) {
-            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.OPEN, oFile.getSelectedFile().getPath()));
+            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.OPEN, open.getSelectedFile().getPath()));
             isEdited = false;
-            log.info(String.format("File for open: [%s]", oFile.getSelectedFile().getPath()));
+            log.info(String.format("File for open: [%s]", open.getSelectedFile().getPath()));
         }
     }
 

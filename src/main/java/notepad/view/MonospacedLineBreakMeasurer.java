@@ -14,8 +14,11 @@ import java.util.Iterator;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
+
+/**
+ * Splits text in lines with given width on spaces or lineSeparators.
+ */
 public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout> {
-    private static final Logger log = Logger.getLogger(MonospacedLineBreakMeasurer.class);
     private static final String lineSeparator = "\n";
 
     private final Font font;

@@ -41,7 +41,7 @@ public class NotepadController {
             try {
                 listener.actionPerformed(this, currTextModel, event);
             } catch (NotepadException e) {
-                log.error("Unexpected behaviour. Program will be closed", e);
+                log.error("Unexpected behaviour. Program will be closed now", e);
                 System.exit(0);
             }
         }

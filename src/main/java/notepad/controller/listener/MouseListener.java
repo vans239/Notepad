@@ -57,7 +57,7 @@ public class MouseListener implements ControllerListener {
         }
     }
 
-    public int getHitIndex(final Point clicked) {
+    private int getHitIndex(final Point clicked) {
         ArrayList<TextLayoutInfo> layouts = view.getLayouts();
         TextLayoutInfo nearestLayout = layouts.get(0);
         for (final TextLayoutInfo layoutInfo : layouts) {

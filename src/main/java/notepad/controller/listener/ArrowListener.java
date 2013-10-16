@@ -31,7 +31,6 @@ public class ArrowListener implements ControllerListener {
     }
 
     private long hit1;
-    private long hit2;
 
     @Override
     public void actionPerformed(NotepadController controller, TextModel textModel, ControllerEvent event) throws NotepadException {
@@ -65,7 +64,7 @@ public class ArrowListener implements ControllerListener {
             if (!ke.getKeyEvent().isShiftDown()) {
                 view.showSelectionSegment(false);
             } else if (ke.getKeyEvent().isShiftDown()) {
-                hit2 = view.getEditPosition();
+                long hit2 = view.getEditPosition();
                 view.updateSelectionSegment(new SegmentL(Math.min(hit1, hit2), Math.max(hit1, hit2)));
                 view.showSelectionSegment(true);
             }
@@ -124,7 +123,7 @@ public class ArrowListener implements ControllerListener {
                 return;
             }
         }
-        throw new IllegalArgumentException("Not allowed state");
+        throw new IllegalArgumentException("Can't found caret on view");
     }
 
 }

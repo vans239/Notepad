@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
  * vans239@gmail.com
  */
 public class PatchListener implements ControllerListener {
-    private static final Logger log = Logger.getLogger(PatchListener.class);
     private NotepadView view;
 
     public PatchListener(NotepadView view) {

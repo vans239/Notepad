@@ -145,6 +145,7 @@ public class TypingListener implements ControllerListener {
         public void backSpace() throws NotepadException {
             delete();
         }
+
         private void scrollToPosition(long pos){
             while(view.getViewPosition() > pos){
                 controller.fireControllerEvent(new CaretEvent(GOTO, view.getViewPosition()));

@@ -12,8 +12,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * vans239@gmail.com
  */
 public class InsertMerger implements Merger<Patch> {
-    private static final Logger log = Logger.getLogger(InsertMerger.class);
-
     @Override
     public boolean isMergeable(Patch last, Patch before) {
         ChangeTextEvent lastEvent = last.getCte();
@@ -27,7 +25,6 @@ public class InsertMerger implements Merger<Patch> {
         if (isBlank(lastIE.getInserted()) || isBlank(beforeIE.getInserted())) {
             return false;
         }
-
         return lastIE.getPos() == beforeIE.getPos() + beforeIE.getInserted().length();
     }
 

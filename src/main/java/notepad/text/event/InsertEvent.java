@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
  * vans239@gmail.com
  */
 public class InsertEvent implements ChangeTextEvent {
-    private static final Logger log = Logger.getLogger(InsertEvent.class);
-
     private String inserted;
     private long pos;
 

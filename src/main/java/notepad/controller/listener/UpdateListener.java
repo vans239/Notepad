@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
  * vans239@gmail.com
  */
 public class UpdateListener implements ControllerListener {
-    private static final Logger log = Logger.getLogger(UpdateListener.class);
     private NotepadView notepadView;
     private NotepadFrame notepadFrame;
 

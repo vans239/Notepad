@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
  * vans239@gmail.com
  */
 public class Context {
-    private static final Logger log = Logger.getLogger(Context.class);
     private long viewPosition;
     private int caretPosition;
 

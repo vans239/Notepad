@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
  * vans239@gmail.com
  */
 public class ControllerTextListener implements ChangeTextListener {
-    private static final Logger log = Logger.getLogger(ControllerTextListener.class);
     private NotepadController controller;
 
     public ControllerTextListener(NotepadController controller) {

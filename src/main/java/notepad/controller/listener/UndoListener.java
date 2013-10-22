@@ -22,7 +22,6 @@ import java.awt.event.KeyEvent;
  * vans239@gmail.com
  */
 public class UndoListener implements ControllerListener {
-    private static final Logger log = Logger.getLogger(UndoListener.class);
     private UndoManager<Patch> undoManager;
     private boolean isReverted = false;
     private NotepadView view;

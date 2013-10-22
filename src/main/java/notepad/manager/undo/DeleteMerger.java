@@ -12,12 +12,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * vans239@gmail.com
  */
 public class DeleteMerger implements Merger<Patch> {
-    private static final Logger log = Logger.getLogger(DeleteMerger.class);
-
     @Override
-    public boolean isMergeable(Patch last, Patch before) {
-        ChangeTextEvent lastEvent = last.getCte();
-        ChangeTextEvent beforeEvent = before.getCte();
+    public boolean isMergeable(final Patch last,final Patch before) {
+        final ChangeTextEvent lastEvent = last.getCte();
+        final ChangeTextEvent beforeEvent = before.getCte();
 
         if (!(lastEvent instanceof DeleteEvent) || !(beforeEvent instanceof DeleteEvent)) {
             return false;
@@ -32,9 +30,9 @@ public class DeleteMerger implements Merger<Patch> {
     }
 
     @Override
-    public Patch merge(Patch last, Patch before) {
-        ChangeTextEvent lastEvent = last.getCte();
-        ChangeTextEvent beforeEvent = before.getCte();
+    public Patch merge(final Patch last,final  Patch before) {
+        final ChangeTextEvent lastEvent = last.getCte();
+        final ChangeTextEvent beforeEvent = before.getCte();
 
         if (!(lastEvent instanceof DeleteEvent) || !(beforeEvent instanceof DeleteEvent)) {
             throw new IllegalArgumentException();

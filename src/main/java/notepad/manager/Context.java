@@ -15,7 +15,7 @@ public class Context {
         this.caretPosition = caretPosition;
     }
 
-    public long getViewPosition() {
+    public long getWindowPosition() {
         return viewPosition;
     }
 

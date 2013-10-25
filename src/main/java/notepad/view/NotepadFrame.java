@@ -1,12 +1,12 @@
 package notepad.view;
 
-import notepad.controller.NotepadController;
-import notepad.controller.event.FileEvent;
+import notepad.model.OtherModel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Observable;
 
 public class NotepadFrame extends JFrame {
     private static final Logger log = Logger.getLogger(NotepadFrame.class);
@@ -14,21 +14,20 @@ public class NotepadFrame extends JFrame {
     //in future revisions should take path from *.properties
     private static final String DEFAULT_PATH = "X:\\Dropbox\\programms\\Java\\Notepad+";
 
-    private NotepadController controller;
     private Mode mode = Mode.INSERT;
-    private JMenu modeMenu = new JMenu(mode.name());
+    private JMenu modeMenu;
     private String currentDirectoryPath = DEFAULT_PATH;
-    private boolean isEdited = false;
 
-    public NotepadFrame(NotepadController controller, NotepadView notepadView) {
-        this.controller = controller;
+    private OtherModel otherModel;
+    private Observable observable;
 
+    public NotepadFrame(NotepadView notepadView) {
         JMenuBar mb = new JMenuBar();
         JMenu mnuFile = new JMenu("File");
         JMenuItem mnuItemOpen = new JMenuItem("Open");
         JMenuItem mnuItemSave = new JMenuItem("Save");
         JMenuItem mnuItemQuit = new JMenuItem("Quit");
-
+        modeMenu = new JMenu(otherModel.getMode().name());
         getContentPane().setLayout(new BorderLayout());
 
         add(notepadView);
@@ -52,18 +51,11 @@ public class NotepadFrame extends JFrame {
         });
     }
 
-    public void edited() {
-        isEdited = true;
-    }
-
-    public void swapMode() {
-        mode = mode.swap();
+    //todo observer swapmode
+    /*{        mode = mode.swap();
         modeMenu.setText(mode.name());
     }
-
-    public Mode getMode() {
-        return mode;
-    }
+    */
 
     public class ListenCloseWdw extends WindowAdapter implements ActionListener {
         @Override
@@ -86,7 +78,7 @@ public class NotepadFrame extends JFrame {
 
     public class ListenMenuOpen implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            if (isEdited) {
+            if (otherModel.isEdited()) {
                 int ans = JOptionPane.showConfirmDialog(
                         NotepadFrame.this, "Do you want to save changes?",
                         "Notepad+",
@@ -103,9 +95,7 @@ public class NotepadFrame extends JFrame {
         JFileChooser save = new JFileChooser(currentDirectoryPath);
         int fileSave = save.showSaveDialog(this);
         if (fileSave == JFileChooser.APPROVE_OPTION) {
-            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.SAVE, save.getSelectedFile().getPath()));
-            isEdited = false;
-            log.info(String.format("File for save: [%s]", save.getSelectedFile().getPath()));
+            observable.notifyObservers();//todo file save  save.getSelectedFile().getPath()
         }
     }
 
@@ -113,9 +103,7 @@ public class NotepadFrame extends JFrame {
         JFileChooser open = new JFileChooser(currentDirectoryPath);
         int fileOpen = open.showOpenDialog(this);
         if (fileOpen == JFileChooser.APPROVE_OPTION) {
-            controller.fireControllerEvent(new FileEvent(FileEvent.FileStatus.OPEN, open.getSelectedFile().getPath()));
-            isEdited = false;
-            log.info(String.format("File for open: [%s]", open.getSelectedFile().getPath()));
+            observable.notifyObservers();//todo file open  open.getSelectedFile().getPath()
         }
     }
 
@@ -123,6 +111,4 @@ public class NotepadFrame extends JFrame {
         pack();
         setVisible(true);
     }
-
-
 }

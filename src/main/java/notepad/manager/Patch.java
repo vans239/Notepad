@@ -1,6 +1,6 @@
 package notepad.manager;
 
-import notepad.text.ChangeTextEvent;
+import notepad.text.full.ChangeTextEvent;
 import org.apache.log4j.Logger;
 
 /**

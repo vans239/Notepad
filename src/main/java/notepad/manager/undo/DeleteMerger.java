@@ -1,9 +1,8 @@
 package notepad.manager.undo;
 
 import notepad.manager.Patch;
-import notepad.text.ChangeTextEvent;
-import notepad.text.event.DeleteEvent;
-import org.apache.log4j.Logger;
+import notepad.text.full.ChangeTextEvent;
+import notepad.text.full.event.DeleteEvent;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 

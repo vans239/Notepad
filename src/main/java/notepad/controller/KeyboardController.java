@@ -8,6 +8,8 @@ import notepad.model.CaretModel;
 import notepad.model.OtherModel;
 import notepad.model.SelectionModel;
 import notepad.service.MoverService;
+import notepad.text.full.ChangeTextEvent;
+import notepad.text.full.ChangeTextListener;
 import notepad.text.full.TextModel;
 import notepad.text.window.TextWindowModel;
 import notepad.utils.SegmentL;
@@ -57,56 +59,54 @@ public class KeyboardController implements KeyListener {
         }
     }
 
-    /*   todo
-    if (!isReverted) {
-                undoManager.add(new Patch(new Context(view.getWindowPosition(), view.getCaretPosition()), ce.getChangeTextEvent()));
-            }
-            isReverted = false;
-     */
-
     @Override
     public void keyPressed(KeyEvent e) {
         try {
             arrows(e);
             handler(e);
+            undoHandler(e);
         } catch (NotepadException e1) {
             otherController.catchException(e1);
         }
     }
 
+
+
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_INSERT) {
+        if (e.getKeyCode() == KeyEvent.VK_INSERT || e.getKeyCode() == VK_F1) {
             otherModel.swapMode();
         }
     }
 
     public enum PatchType {
-        UNDO, REDO
-        }
+        UNDO, REDO;
+    }
 
     private void undoHandler(KeyEvent e) throws NotepadException {
         Patch patch = null;
         PatchType patchType = null;
-        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) {
-            patch = undoManager.undo();
-            patchType = PatchType.UNDO;
-        } else if (e.isControlDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+        if (e.isControlDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Z) {
             patch = undoManager.redo();
             patchType = PatchType.REDO;
+        } else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) {
+            patch = undoManager.undo();
+            patchType = PatchType.UNDO;
         }
 
         if (patch != null) {
             otherModel.setReverted(true);
-            final Context context = patch.getContext();
             caretModel.goTo(0);
-            textWindowModel.goTo(context.getWindowPosition());
-            caretModel.goTo(context.getCaretPosition());
+            final Context context;
             if (patchType == PatchType.REDO) {
+                context = patch.getContextAfter();
                 patch.getCte().apply(textModel);
             } else {
+                context = patch.getContextBefore();
                 patch.getCte().revert(textModel);
             }
+            textWindowModel.goTo(context.getWindowPosition());
+            caretModel.goTo(context.getCaretPosition());
         }
     }
 
@@ -123,6 +123,7 @@ public class KeyboardController implements KeyListener {
             //todo check is char printable real
             if (keyChar != 8 && keyChar != '\u007f' && keyChar != '\u001A' && keyChar != '\u0019') {
                 handler.typed(keyChar);
+                undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
             }
         }
 
@@ -132,16 +133,14 @@ public class KeyboardController implements KeyListener {
         if (e.getID() == KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_DELETE) {
             handler.delete();
         }
+
     }
 
     private void arrows(KeyEvent e) throws NotepadException {
         if (e.isShiftDown() && !otherModel.isShowSelection()) {
             selectionModel.setStart(caretModel.getCaretPositionAbs());
-            otherModel.setShowSelection(true);
         }
-        if(!e.isShiftDown() && otherModel.isShowSelection()){
-            otherModel.setShowSelection(false);
-        }
+
         switch (e.getKeyCode()) {
             case VK_LEFT:
                 moverService.left();
@@ -156,12 +155,35 @@ public class KeyboardController implements KeyListener {
                 moverService.up();
                 break;
             default:
+                return;
+        }
+
+        if (e.isShiftDown() && !otherModel.isShowSelection()) {
+            otherModel.setShowSelection(true);
+
+        }
+        if(!e.isShiftDown() && otherModel.isShowSelection()){
+            otherModel.setShowSelection(false);
         }
 
         if (e.isShiftDown()) {
             long hit2 = caretModel.getCaretPositionAbs();
             selectionModel.setEnd(hit2);
         }
+    }
+
+    private Patch patch;
+    public void textModelChanged(ChangeTextEvent event) {
+        if(!otherModel.isReverted()){
+            Context contextBefore = getContext();
+            patch = new Patch(
+                    contextBefore, null, event);
+        }
+        otherModel.setReverted(false);
+    }
+
+    private Context getContext() {
+        return new Context(textWindowModel.getWindowPosition(), caretModel.getCaretPosition());
     }
 
     interface Handler {
@@ -180,14 +202,14 @@ public class KeyboardController implements KeyListener {
             } else {
                 textModel.replace(caretModel.getCaretPositionAbs(), Character.toString(keyChar));
             }
-            caretModel.goRight();
+            moverService.right();
         }
 
         @Override
         public void backSpace() throws NotepadException {
             if (caretModel.getCaretPositionAbs() > 0) {
                 textModel.remove(caretModel.getCaretPositionAbs() - 1, 1);
-                caretModel.goLeft();
+                moverService.left();
             }
         }
 

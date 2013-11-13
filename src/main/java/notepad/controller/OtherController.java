@@ -10,8 +10,13 @@ import notepad.text.window.TextWindowModel;
 import notepad.view.NotepadView;
 import org.apache.log4j.Logger;
 
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -25,18 +30,21 @@ public class OtherController {
     private final TextWindowModel windowModel;
     private final OtherModel otherModel;
     private NotepadView view; //todo ??
+
     public OtherController(ChangeableTextModel textModel, FileService fileService,
-                           CaretModel caretModel, TextWindowModel windowModel, OtherModel otherModel) {
+                           CaretModel caretModel, TextWindowModel windowModel, OtherModel otherModel, NotepadView view) {
         this.textModel = textModel;
         this.fileService = fileService;
         this.caretModel = caretModel;
         this.windowModel = windowModel;
         this.otherModel = otherModel;
+        this.view = view;
     }
 
-    private void init() throws NotepadException {
+    public void init() throws NotepadException {
         textModel.changeTextModel(fileService.empty());
         windowModel.init(view.getSize(), view.getMetrics(), view.getFontRenderContext());
+//        view.addComponentListener(resizedAdapter);
     }
 
     public void open(File file) throws NotepadException {
@@ -53,6 +61,45 @@ public class OtherController {
     }
 
     public void catchException(final Exception e){
-
+        log.error("", e);
     }
+
+    public final Observer saveObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            try {
+                save((File) arg);
+            } catch (NotepadException e) {
+                log.error("", e);
+            }
+        }
+    };
+
+    public final Observer openObserver = new Observer() {
+        @Override
+        public void update(Observable o, Object arg) {
+            try {
+                open((File) arg);
+            } catch (NotepadException e) {
+                log.error("", e);
+            }
+        }
+    };
+
+    public void setSize(Dimension size) throws NotepadException {
+        windowModel.setSize(size);
+        caretModel.goTo(0);
+    }
+
+    public final ComponentAdapter resizedAdapter = new ComponentAdapter() {
+        public void componentResized(ComponentEvent e) {
+            try {
+                Dimension size = e.getComponent().getSize();
+                Dimension sizeForDraw = new Dimension(size.width - otherModel.getIndent(), size.height);
+                setSize(sizeForDraw);
+            } catch (NotepadException exc) {
+                log.error("", exc);
+            }
+        }
+    };
 }

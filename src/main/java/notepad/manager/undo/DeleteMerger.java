@@ -39,10 +39,10 @@ public class DeleteMerger implements Merger<Patch> {
         DeleteEvent lastDE = (DeleteEvent) lastEvent;
         DeleteEvent beforeDE = (DeleteEvent) beforeEvent;
         if (lastDE.getPos() == beforeDE.getPos()) {
-            return new Patch(before.getContext(), new DeleteEvent(lastDE.getPos(), beforeDE.getDeleted() + lastDE.getDeleted()));
+            return new Patch(before.getContextBefore(), last.getContextAfter(), new DeleteEvent(lastDE.getPos(), beforeDE.getDeleted() + lastDE.getDeleted()));
         }
         if (lastDE.getPos() + lastDE.getDeleted().length() == beforeDE.getPos()) {
-            return new Patch(before.getContext(), new DeleteEvent(lastDE.getPos(), lastDE.getDeleted() + beforeDE.getDeleted()));
+            return new Patch(before.getContextBefore(), last.getContextAfter(), new DeleteEvent(lastDE.getPos(), lastDE.getDeleted() + beforeDE.getDeleted()));
         }
         throw new IllegalArgumentException();
     }

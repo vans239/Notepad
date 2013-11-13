@@ -73,11 +73,13 @@ public class BufferedTextModel extends AbstractTextModel {
     }
 
     private void updateBuffer(SegmentL segmentL) throws NotepadException {
-        if (!getBufferSegment().in(segmentL)) {
-            log.info("Buffer flushing");
-            flushBuffer();
-            initBuffer(segmentL);
+        boolean appendToEnd = textModel.length() == position + beforeBufferText.length();
+        if (getBufferSegment().contains(segmentL) || (getBufferSegment().contains(segmentL.getStart()) && appendToEnd)) {
+            return;
         }
+        log.info("Buffer flushing");
+        flushBuffer();
+        initBuffer(segmentL);
     }
 
     private void initBuffer(SegmentL segmentL) throws NotepadException {

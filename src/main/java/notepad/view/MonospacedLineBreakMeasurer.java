@@ -16,7 +16,7 @@ import java.util.Iterator;
  */
 
 /**
- * Splits text in lines with given width on spaces or lineSeparators.
+ * Splits text contains lines with given width on spaces or lineSeparators.
  */
 public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout> {
     private static final String lineSeparator = "\n";
@@ -61,27 +61,22 @@ public class MonospacedLineBreakMeasurer implements Iterable<SmartTextLayout> {
                 if (text.isEmpty()) {
                     return new EmptyTextLayout(false, fontMetrics);
                 }
-                if ("\n".equals(text)) {
-                    text = "";
-                    return new EmptyTextLayout(true, fontMetrics);
-                }
                 if (text.length() < maxSymbols) {
                     end = text.length();
-                    curr = new NonEmptyTextLayout(false, text.substring(0, end), font, frc);
                 } else {
                     int min = Math.min(maxSymbols, text.length());
                     end = text.substring(0, min).lastIndexOf(' ') + 1;
                     if (end == 0) {
                         end = min;
                     }
-                    curr = new NonEmptyTextLayout(false, text.substring(0, end), font, frc);
                 }
+                curr = new NonEmptyTextLayout(false, text.substring(0, end), font, frc);
 
                 int separatorIndex = text.indexOf(lineSeparator);
-                if (separatorIndex != -1 && separatorIndex + 1 < end) {
+                if (separatorIndex != -1 && separatorIndex < end) {
                     end = separatorIndex + 1;
-                    if (end != 0) {
-                        curr = new NonEmptyTextLayout(true, text.substring(0, end - 1), font, frc);
+                    if (separatorIndex != 0) {
+                        curr = new NonEmptyTextLayout(true, text.substring(0, separatorIndex), font, frc);
                     } else {
                         curr = new EmptyTextLayout(true, fontMetrics);
                     }

@@ -58,7 +58,6 @@ public class UndoManager<T> {
                     if (merger.isMergeable(last, before)) {
                         f = true;
                         T merged = merger.merge(last, before);
-                        log.debug(String.format("Merged [%s] and [%s]", last.toString(), before.toString()));
                         undos.push(merged);
                     } else {
                         undos.push(before);

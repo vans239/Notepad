@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.awt.*;
 import java.awt.font.TextHitInfo;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.text.AttributedCharacterIterator;
 
 /**
@@ -32,6 +33,26 @@ public class EmptyTextLayout implements SmartTextLayout {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EmptyTextLayout that = (EmptyTextLayout) o;
+
+        if (isNewLine != that.isNewLine) return false;
+        if (metrics != null ? !metrics.equals(that.metrics) : that.metrics != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isNewLine ? 1 : 0);
+        result = 31 * result + (metrics != null ? metrics.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public Shape[] getCaretShapes(int index) {
         if (index != 0) {
             throw new IllegalArgumentException("No such element");
@@ -49,6 +70,21 @@ public class EmptyTextLayout implements SmartTextLayout {
     }
 
     @Override
+    public String toString() {
+        return "EmptyTextLauout [" + isNewLine + "]";
+    }
+
+    @Override
     public void addAttribute(AttributedCharacterIterator.Attribute attribute, Object obj, int start, int end) {
+    }
+
+    @Override
+    public EmptyTextLayout clone() {
+        return this; //object is immutable
+    }
+
+    @Override
+    public Point getPoint(int index) {
+        return new Point(0,0);
     }
 }

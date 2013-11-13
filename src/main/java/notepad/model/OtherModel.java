@@ -1,7 +1,13 @@
 package notepad.model;
 
+import notepad.text.full.ChangeTextEvent;
+import notepad.text.full.ChangeTextListener;
+import notepad.utils.ImmediateObservable;
 import notepad.view.Mode;
 import org.apache.log4j.Logger;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -13,9 +19,17 @@ public class OtherModel {
     private boolean isEdited = false;
     private Mode mode = Mode.INSERT;
     private boolean isReverted = false;
+    private int indent = 5;
+
+    public final Observable swapObservable = new ImmediateObservable();
+    public final Observable isEditObservable = new ImmediateObservable();
 
     public void setReverted(boolean reverted) {
         isReverted = reverted;
+    }
+
+    public int getIndent() {
+        return indent;
     }
 
     public boolean isReverted() {
@@ -27,11 +41,17 @@ public class OtherModel {
     }
 
     public void setEdited(boolean edited) {
-        isEdited = edited;
+        if(edited != isEdited){
+            isEdited = edited;
+            isEditObservable.notifyObservers();
+        }
     }
 
     public void setMode(Mode mode) {
-        this.mode = mode;
+        if(mode != this.mode){
+            this.mode = mode;
+            swapObservable.notifyObservers();
+        }
     }
 
     public boolean isShowSelection() {
@@ -48,6 +68,13 @@ public class OtherModel {
     }
 
     public void swapMode(){
-        mode = mode.swap();
+        setMode(mode.swap());
     }
+
+    public final ChangeTextListener editChangeTextListener = new ChangeTextListener() {
+        @Override
+        public void actionPerformed(ChangeTextEvent event) {
+            setEdited(true);
+        }
+    };
 }

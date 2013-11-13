@@ -5,17 +5,16 @@ import notepad.model.CaretModel;
 import notepad.model.OtherModel;
 import notepad.model.SelectionModel;
 import notepad.text.window.TextWindowModel;
-import notepad.utils.Segment;
 import notepad.utils.SegmentL;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -38,20 +37,29 @@ public class NotepadView extends JPanel {
     private OtherModel otherModel;
     private SelectionModel selectionModel;
 
-    public NotepadView(TextWindowModel windowModel, CaretModel caretModel, OtherModel otherModel, SelectionModel selectionModel)
+    public NotepadView(TextWindowModel windowModel, CaretModel caretModel, final OtherModel otherModel, SelectionModel selectionModel)
             throws NotepadException {
         this.windowModel = windowModel;
         this.caretModel = caretModel;
         this.otherModel = otherModel;
         this.selectionModel = selectionModel;
 
-        addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                try {
-                    NotepadView.this.windowModel.setSize(getSize()); //todo may it should be by controller?
-                } catch (NotepadException exc) {
-                    log.error("", exc);
-                }
+        windowModel.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                repaint();
+            }
+        });
+        caretModel.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                repaint();
+            }
+        });
+        selectionModel.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                repaint();
             }
         });
     }
@@ -72,19 +80,28 @@ public class NotepadView extends JPanel {
         super.paintComponent(g);
         setBackground(Color.white);
         final Graphics2D g2d = (Graphics2D) g;
-        final int drawPosX = 0;
+        final int drawPosX = otherModel.getIndent();
         final int drawPosY = 0;
 
         g2d.translate(drawPosX, drawPosY);
+        final ArrayList<TextLayoutInfo> layouts = cloneLayouts();
         if (otherModel.isShowSelection()) {
-            drawDragged(g2d);
+            drawDragged(g2d, layouts);
         }
-        drawLayouts(g2d);
+        drawLayouts(g2d, layouts);
         drawCaret(g2d);
     }
 
-    private void drawLayouts(Graphics2D g2d) {
-        for (final TextLayoutInfo layoutInfo : windowModel.getLayouts()) {
+    private ArrayList<TextLayoutInfo> cloneLayouts() {
+        final ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
+        for(TextLayoutInfo textLayoutInfo : windowModel.getLayouts()){
+            layouts.add(textLayoutInfo.clone());
+        }
+        return layouts;
+    }
+
+    private void drawLayouts(Graphics2D g2d, ArrayList<TextLayoutInfo> layouts) {
+        for (final TextLayoutInfo layoutInfo : layouts) {
             g2d.setBackground(BACKGROUND);
             g2d.setColor(TEXT_COLOR);
             layoutInfo.getLayout().draw(g2d, layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
@@ -102,20 +119,20 @@ public class NotepadView extends JPanel {
         g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
     }
 
-    private void drawDragged(Graphics2D g2d) {
-        for (final TextLayoutInfo layoutInfo : windowModel.getLayouts()) {
+    private void drawDragged(Graphics2D g2d, ArrayList<TextLayoutInfo> layouts) {
+        for (final TextLayoutInfo layoutInfo : layouts) {
             final SegmentL segment =
                     new SegmentL(layoutInfo.getPosition() + windowModel.getWindowPosition(),
                             windowModel.getWindowPosition() + layoutInfo.getPosition() + layoutInfo.getLayout().getCharacterCount());
             g2d.translate(layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
             final SegmentL intersection =
                     segment.intersection(selectionModel.getSelection());
-            final Segment blackboxSegment = new Segment((int)
-                    (intersection.getStart() - layoutInfo.getPosition() - windowModel.getWindowPosition()),
-                    (int) (intersection.getEnd() - layoutInfo.getPosition() - windowModel.getWindowPosition()));
-            if (blackboxSegment.getEnd() != blackboxSegment.getStart()) {
-                layoutInfo.getLayout().addAttribute(TextAttribute.FOREGROUND, INV_TEXT_COLOR, blackboxSegment.getStart(), blackboxSegment.getEnd());
-                layoutInfo.getLayout().addAttribute(TextAttribute.BACKGROUND, INV_BACKGROUND, blackboxSegment.getStart(), blackboxSegment.getEnd());
+            int start = (int)
+                    (intersection.getStart() - layoutInfo.getPosition() - windowModel.getWindowPosition());
+            int end = (int) (intersection.getEnd() - layoutInfo.getPosition() - windowModel.getWindowPosition());
+            if (start != end) {
+                layoutInfo.getLayout().addAttribute(TextAttribute.FOREGROUND, INV_TEXT_COLOR, start, end);
+                layoutInfo.getLayout().addAttribute(TextAttribute.BACKGROUND, INV_BACKGROUND, start, end);
             }
             g2d.translate(-layoutInfo.getOrigin().x, -layoutInfo.getOrigin().y);
         }

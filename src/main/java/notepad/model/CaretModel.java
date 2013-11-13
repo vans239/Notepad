@@ -4,8 +4,14 @@ import javafx.util.Pair;
 import notepad.text.window.TextWindowModel;
 import notepad.view.TextLayoutInfo;
 import org.apache.log4j.Logger;
+
+import java.awt.*;
+import java.awt.font.TextHitInfo;
+import java.awt.font.TextLayout;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -16,8 +22,18 @@ public class CaretModel extends Observable {
     private TextWindowModel windowModel;
     private int caretPosition = 0;
 
+    private int wantedX = 0;
+
     public CaretModel(TextWindowModel windowModel) {
         this.windowModel = windowModel;
+        windowModel.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                if(arg != null){
+                    caretPosition -= (Integer) arg;
+                }
+            }
+        });
     }
 
     public int getCaretPosition() {
@@ -29,13 +45,15 @@ public class CaretModel extends Observable {
     }
 
     public void goTo(final int caretPosition){
-        this.caretPosition = caretPosition;
+        setCaret(caretPosition);
+        updateWantedX();
     }
 
     public boolean goUp(){
         Pair<TextLayoutInfo, Integer> caretPair = getCaretLayoutPair();
         if(caretPair.getValue() > 0){
-            caretPosition -= windowModel.getLayouts().get(caretPair.getValue() - 1).getLayout().getCharacterCount();
+            TextLayoutInfo textLayoutInfo = windowModel.getLayouts().get(caretPair.getValue() - 1);
+            goToWantedX(textLayoutInfo);
             return true;
         }
         return false;
@@ -44,7 +62,8 @@ public class CaretModel extends Observable {
     public boolean goDown(){
         Pair<TextLayoutInfo, Integer> caretPair = getCaretLayoutPair();
         if(caretPair.getValue() + 1 < windowModel.getLayouts().size()){
-            caretPosition -= caretPair.getKey().getLayout().getCharacterCount();
+            TextLayoutInfo textLayoutInfo = windowModel.getLayouts().get(caretPair.getValue() + 1);
+            goToWantedX(textLayoutInfo);
             return true;
         }
         return false;
@@ -52,20 +71,42 @@ public class CaretModel extends Observable {
 
     public boolean goLeft(){
         if (caretPosition > 0) {
-            --caretPosition;
+            goTo(caretPosition - 1);
             return true;
         }
         return false;
     }
 
     public boolean goRight(){
-        if(caretPosition < windowModel.getWindowLength()){
-            caretPosition++;
+        if(caretPosition < windowModel.getEffectiveWindowLength()){
+            goTo(caretPosition + 1);
             return true;
         }
         return false;
     }
 
+    public void goToPoint(final Point point){
+        goTo(getHitIndex(point));
+    }
+
+    private void updateWantedX() {
+        TextLayoutInfo caretLayout = getCaretLayout();
+        Point p = caretLayout.getLayout().getPoint(caretPosition - caretLayout.getPosition());
+        wantedX = p.x;
+//        log.info("WantedX: " + wantedX);
+    }
+
+    private void goToWantedX(TextLayoutInfo textLayoutInfo){
+        setCaret(textLayoutInfo.getPosition() + textLayoutInfo.getLayout().hitTestChar(wantedX , 0).getCharIndex());
+    }
+
+    //only updates
+    private void setCaret(final int caretPosition){
+        this.caretPosition = caretPosition;
+        setChanged();
+        notifyObservers();
+//        log.info("CaretPos: " + caretPosition);
+    }
 
     public TextLayoutInfo getCaretLayout(){
         return getCaretLayoutPair().getKey();
@@ -87,5 +128,21 @@ public class CaretModel extends Observable {
         int to = from + layoutInfo.getLayout().getCharacterCount();
         return (caretPosition >= from && caretPosition < to)
                 || (caretPosition >= from && isLastLayout);
+    }
+
+    private int getHitIndex(final Point clicked) {
+        ArrayList<TextLayoutInfo> layouts = windowModel.getLayouts();
+        TextLayoutInfo nearestLayout = layouts.get(0);
+        for (final TextLayoutInfo layoutInfo : layouts) {
+            if (distance(layoutInfo, clicked) < distance(nearestLayout, clicked)) {
+                nearestLayout = layoutInfo;
+            }
+        }
+        final TextHitInfo hitInfo = nearestLayout.getLayout().hitTestChar(clicked.x, clicked.y);
+        return nearestLayout.getPosition() + hitInfo.getInsertionIndex();
+    }
+
+    private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked) {
+        return Math.abs(textLayoutInfo.getOrigin().y - clicked.y);
     }
 }

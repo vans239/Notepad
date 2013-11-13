@@ -24,7 +24,7 @@ public class SegmentL {
         return start;
     }
 
-    public boolean in(final long t) {
+    public boolean contains(final long t) {
         return t >= start && t <= end;
     }
 
@@ -46,8 +46,8 @@ public class SegmentL {
         return 0;
     }
 
-    public boolean in(SegmentL that) {
-        return in(that.start) && in(that.end);
+    public boolean contains(SegmentL that) {
+        return contains(that.start) && contains(that.end);
     }
 
     public SegmentL intersection(SegmentL that) {

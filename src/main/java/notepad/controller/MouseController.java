@@ -29,36 +29,36 @@ public class MouseController implements MouseListener, MouseMotionListener {
     private final CaretModel caretModel;
     private final SelectionModel selectionModel;
     private final OtherModel otherModel;
-    private final TextWindowModel textWindowModel;
-    private final OtherController otherController;
 
-    public MouseController(CaretModel caretModel, SelectionModel selectionModel, OtherModel otherModel,
-                           TextWindowModel textWindowModel, OtherController otherController) {
+    public MouseController(CaretModel caretModel, SelectionModel selectionModel, OtherModel otherModel) {
         this.caretModel = caretModel;
         this.selectionModel = selectionModel;
         this.otherModel = otherModel;
-        this.textWindowModel = textWindowModel;
-        this.otherController = otherController;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int index = getHitIndex(e.getPoint());
-        caretModel.goTo(index);
+        caretModel.goToPoint(deindent(e));
         otherModel.setShowSelection(false);
+    }
+
+    private Point deindent(MouseEvent e) {
+        Point point = e.getPoint();
+        point.translate(-otherModel.getIndent(), 0);
+        return point;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        selectionModel.setStart(textWindowModel.getWindowPosition() + getHitIndex(e.getPoint()));
+        caretModel.goToPoint(deindent(e));
+        selectionModel.setStart(caretModel.getCaretPositionAbs());
         otherModel.setShowSelection(true);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        int hit2 = getHitIndex(e.getPoint());
-        selectionModel.setEnd(textWindowModel.getWindowPosition() + hit2);
-        caretModel.goTo(hit2);
+        caretModel.goToPoint(deindent(e));
+        selectionModel.setEnd(caretModel.getCaretPositionAbs());
     }
 
     @Override
@@ -69,26 +69,11 @@ public class MouseController implements MouseListener, MouseMotionListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    private int getHitIndex(final Point clicked) {
-        ArrayList<TextLayoutInfo> layouts = textWindowModel.getLayouts();
-        TextLayoutInfo nearestLayout = layouts.get(0);
-        for (final TextLayoutInfo layoutInfo : layouts) {
-            if (distance(layoutInfo, clicked) < distance(nearestLayout, clicked)) {
-                nearestLayout = layoutInfo;
-            }
-        }
-        final TextHitInfo hitInfo = nearestLayout.getLayout().hitTestChar(clicked.x, clicked.y);
-        return nearestLayout.getPosition() + hitInfo.getInsertionIndex();
 
-    }
-
-    private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked) {
-        return Math.abs(textLayoutInfo.getOrigin().y - clicked.y);
-    }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        mousePressed(e);
+        mouseReleased(e);
     }
 
     @Override

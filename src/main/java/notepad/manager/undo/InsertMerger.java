@@ -39,7 +39,7 @@ public class InsertMerger implements Merger<Patch> {
         InsertEvent beforeIE = (InsertEvent) beforeEvent;
         if (lastIE.getPos() == beforeIE.getPos() + beforeIE.getInserted().length()) {
             ChangeTextEvent patchEvent = new InsertEvent(beforeIE.getPos(), beforeIE.getInserted() + lastIE.getInserted());
-            return new Patch(before.getContext(), patchEvent);
+            return new Patch(before.getContextBefore(), last.getContextAfter(), patchEvent);
         }
         throw new IllegalArgumentException();
     }

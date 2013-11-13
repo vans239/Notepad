@@ -12,10 +12,6 @@ import java.io.File;
 public class ChangeableTextModel extends AbstractTextModel {
     private AbstractTextModel textModel;
 
-    public ChangeableTextModel(AbstractTextModel textModel) {
-        this.textModel = textModel;
-    }
-
     public AbstractTextModel getTextModel(){
         return textModel;
     }

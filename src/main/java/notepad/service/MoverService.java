@@ -11,8 +11,13 @@ import org.apache.log4j.Logger;
  */
 public class MoverService {
     private static final Logger log = Logger.getLogger(MoverService.class);
-    private TextWindowModel textWindowModel;
-    private CaretModel caretModel;
+    private final TextWindowModel textWindowModel;
+    private final CaretModel caretModel;
+
+    public MoverService(TextWindowModel textWindowModel, CaretModel caretModel) {
+        this.textWindowModel = textWindowModel;
+        this.caretModel = caretModel;
+    }
 
     public void up() throws NotepadException {
         if(!caretModel.goUp()){
@@ -31,15 +36,14 @@ public class MoverService {
     public void left() throws NotepadException {
         if(!caretModel.goLeft()){
             textWindowModel.up();
-            caretModel.goUp();
+            caretModel.goLeft();
         }
     }
 
     public void right() throws NotepadException {
         if(!caretModel.goRight()){
-            textWindowModel.up();
-            caretModel.goDown();
+            textWindowModel.down();
+            caretModel.goRight();
         }
-
     }
 }

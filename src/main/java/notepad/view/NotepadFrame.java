@@ -1,37 +1,42 @@
 package notepad.view;
 
 import notepad.model.OtherModel;
+import notepad.utils.ImmediateObservable;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Observable;
+import java.util.Observer;
 
 public class NotepadFrame extends JFrame {
     private static final Logger log = Logger.getLogger(NotepadFrame.class);
 
-    //in future revisions should take path from *.properties
+    //contains future revisions should take path from *.properties
     private static final String DEFAULT_PATH = "X:\\Dropbox\\programms\\Java\\Notepad+";
+    private static final String FRAME_NAME = "Notepad";
 
-    private Mode mode = Mode.INSERT;
-    private JMenu modeMenu;
     private String currentDirectoryPath = DEFAULT_PATH;
 
-    private OtherModel otherModel;
-    private Observable observable;
+    private final OtherModel otherModel;
+    private StatusBar statusBar;
+    public final ImmediateObservable saveObservable = new ImmediateObservable();
+    public final ImmediateObservable sizeObservable = new ImmediateObservable();
+    public final ImmediateObservable openObservable = new ImmediateObservable();
 
-    public NotepadFrame(NotepadView notepadView) {
+    public NotepadFrame(NotepadView notepadView, final OtherModel otherModel) {
+        this.otherModel = otherModel;
+        setTitle(FRAME_NAME);
         JMenuBar mb = new JMenuBar();
         JMenu mnuFile = new JMenu("File");
         JMenuItem mnuItemOpen = new JMenuItem("Open");
         JMenuItem mnuItemSave = new JMenuItem("Save");
         JMenuItem mnuItemQuit = new JMenuItem("Quit");
-        modeMenu = new JMenu(otherModel.getMode().name());
-        getContentPane().setLayout(new BorderLayout());
 
-        add(notepadView);
-
+        statusBar = new StatusBar("", otherModel.isEdited(), otherModel.getMode());
+        add(notepadView, BorderLayout.CENTER);
+        add(statusBar, BorderLayout.PAGE_END);
         addWindowListener(new ListenCloseWdw());
         mnuItemOpen.addActionListener(new ListenMenuOpen());
         mnuItemSave.addActionListener(new ListenMenuSave());
@@ -39,7 +44,7 @@ public class NotepadFrame extends JFrame {
 
         setJMenuBar(mb);
         mb.add(mnuFile);
-        mb.add(modeMenu);
+
         mnuFile.add(mnuItemOpen);
         mnuFile.add(mnuItemSave);
         mnuFile.add(mnuItemQuit);
@@ -49,13 +54,19 @@ public class NotepadFrame extends JFrame {
                 repaint();
             }
         });
+        otherModel.swapObservable.addObserver(new Observer(){
+            @Override
+            public void update(Observable o, Object arg) {
+                statusBar.setMode(otherModel.getMode());
+            }
+        });
+        otherModel.isEditObservable.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                statusBar.setIsEdited(otherModel.isEdited());
+            }
+        });
     }
-
-    //todo observer swapmode
-    /*{        mode = mode.swap();
-        modeMenu.setText(mode.name());
-    }
-    */
 
     public class ListenCloseWdw extends WindowAdapter implements ActionListener {
         @Override
@@ -95,7 +106,8 @@ public class NotepadFrame extends JFrame {
         JFileChooser save = new JFileChooser(currentDirectoryPath);
         int fileSave = save.showSaveDialog(this);
         if (fileSave == JFileChooser.APPROVE_OPTION) {
-            observable.notifyObservers();//todo file save  save.getSelectedFile().getPath()
+            saveObservable.notifyObservers(save.getSelectedFile());
+            statusBar.setFile(save.getSelectedFile().getName());
         }
     }
 
@@ -103,7 +115,8 @@ public class NotepadFrame extends JFrame {
         JFileChooser open = new JFileChooser(currentDirectoryPath);
         int fileOpen = open.showOpenDialog(this);
         if (fileOpen == JFileChooser.APPROVE_OPTION) {
-            observable.notifyObservers();//todo file open  open.getSelectedFile().getPath()
+            openObservable.notifyObservers(open.getSelectedFile());
+            statusBar.setFile(open.getSelectedFile().getName());
         }
     }
 

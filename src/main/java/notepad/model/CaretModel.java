@@ -1,14 +1,12 @@
 package notepad.model;
 
-import javafx.util.Pair;
 import notepad.text.window.TextWindowModel;
 import notepad.view.TextLayoutInfo;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.awt.font.TextHitInfo;
-import java.awt.font.TextLayout;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -105,7 +103,7 @@ public class CaretModel extends Observable {
         this.caretPosition = caretPosition;
         setChanged();
         notifyObservers();
-//        log.info("CaretPos: " + caretPosition);
+//        log.debug("CaretPos: " + caretPosition);
     }
 
     public TextLayoutInfo getCaretLayout(){
@@ -117,7 +115,7 @@ public class CaretModel extends Observable {
         for (int i = 0; i < layouts.size(); ++i) {
             final TextLayoutInfo layoutInfo = layouts.get(i);
             if (caretInThisTextLayout(layoutInfo, i == layouts.size() - 1)) {
-                return new Pair<TextLayoutInfo, Integer>(layoutInfo, i);
+                return Pair.of(layoutInfo, i);
             }
         }
         throw new RuntimeException("Unreachable place");
@@ -125,7 +123,7 @@ public class CaretModel extends Observable {
 
     private boolean caretInThisTextLayout(TextLayoutInfo layoutInfo, boolean isLastLayout) {
         int from = layoutInfo.getPosition();
-        int to = from + layoutInfo.getLayout().getCharacterCount();
+        int to = from + layoutInfo.getLayout().getFullCharacterCount() ;
         return (caretPosition >= from && caretPosition < to)
                 || (caretPosition >= from && isLastLayout);
     }

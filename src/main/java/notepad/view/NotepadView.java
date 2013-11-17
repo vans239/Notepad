@@ -44,6 +44,7 @@ public class NotepadView extends JPanel {
         this.otherModel = otherModel;
         this.selectionModel = selectionModel;
 
+
         windowModel.addObserver(new Observer() {
             @Override
             public void update(Observable o, Object arg) {
@@ -72,15 +73,11 @@ public class NotepadView extends JPanel {
         return frc;
     }
 
-    public Dimension getPreferredSize() {
-        return new Dimension(600, 480);
-    }
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         setBackground(Color.white);
         final Graphics2D g2d = (Graphics2D) g;
-        final int drawPosX = otherModel.getIndent();
+        final int drawPosX = otherModel.getTextIndent();
         final int drawPosY = 0;
 
         g2d.translate(drawPosX, drawPosY);
@@ -123,7 +120,7 @@ public class NotepadView extends JPanel {
         for (final TextLayoutInfo layoutInfo : layouts) {
             final SegmentL segment =
                     new SegmentL(layoutInfo.getPosition() + windowModel.getWindowPosition(),
-                            windowModel.getWindowPosition() + layoutInfo.getPosition() + layoutInfo.getLayout().getCharacterCount());
+                            windowModel.getWindowPosition() + layoutInfo.getPosition() + layoutInfo.getLayout().getFullCharacterCount());
             g2d.translate(layoutInfo.getOrigin().x, layoutInfo.getOrigin().y);
             final SegmentL intersection =
                     segment.intersection(selectionModel.getSelection());

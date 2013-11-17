@@ -6,8 +6,8 @@ import notepad.utils.ImmediateObservable;
 import notepad.view.Mode;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -17,19 +17,30 @@ public class OtherModel {
     private static final Logger log = Logger.getLogger(OtherModel.class);
     private boolean isShowSelection = false;
     private boolean isEdited = false;
-    private Mode mode = Mode.INSERT;
     private boolean isReverted = false;
-    private int indent = 5;
+    private Mode mode = Mode.INSERT;
+    private final int textIndent = 5;
+    private File file;
 
     public final Observable swapObservable = new ImmediateObservable();
     public final Observable isEditObservable = new ImmediateObservable();
+    public final Observable fileObservable = new ImmediateObservable();
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+        fileObservable.notifyObservers();
+    }
 
     public void setReverted(boolean reverted) {
         isReverted = reverted;
     }
 
-    public int getIndent() {
-        return indent;
+    public int getTextIndent() {
+        return textIndent;
     }
 
     public boolean isReverted() {

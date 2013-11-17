@@ -36,7 +36,7 @@ public class FileTextModelTest {
         IOUtils.copy(input, output);
         output.close();
         input.close();
-        textModel = new Utf8FlushModelText(file);
+        textModel = new Utf8FlushModel(file);
         file.deleteOnExit();
     }
     @Test

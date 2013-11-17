@@ -18,7 +18,7 @@ public class EmptyTextLayout implements SmartTextLayout {
     private FontMetrics metrics;
 
     @Override
-    public int getCharacterCount() {
+    public int getFullCharacterCount() {
         return isNewLine ? 1 : 0;
     }
 

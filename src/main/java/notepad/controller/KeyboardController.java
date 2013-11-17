@@ -77,10 +77,17 @@ public class KeyboardController implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_INSERT || e.getKeyCode() == VK_F1) {
             otherModel.swapMode();
         }
+        if(e.isControlDown() && e.getKeyCode() == KeyEvent.VK_S){
+            try {
+                otherController.save();
+            } catch (NotepadException e1) {
+                log.error("Can't save file", e1);
+            }
+        }
     }
 
     public enum PatchType {
-        UNDO, REDO;
+        UNDO, REDO
     }
 
     private void undoHandler(KeyEvent e) throws NotepadException {
@@ -121,9 +128,10 @@ public class KeyboardController implements KeyListener {
         if(e.getID() == KEY_TYPED){
             char keyChar = e.getKeyChar();
             //todo check is char printable real
-            if (keyChar != 8 && keyChar != '\u007f' && keyChar != '\u001A' && keyChar != '\u0019') {
+            // \b
+            if (keyChar != 8 && keyChar != '\u007f' && keyChar != '\u0019'
+                    && (e.getModifiers() | java.awt.event.InputEvent.SHIFT_MASK) == java.awt.event.InputEvent.SHIFT_MASK) {
                 handler.typed(keyChar);
-                undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
             }
         }
 
@@ -173,6 +181,7 @@ public class KeyboardController implements KeyListener {
     }
 
     private Patch patch;
+
     public void textModelChanged(ChangeTextEvent event) {
         if(!otherModel.isReverted()){
             Context contextBefore = getContext();
@@ -203,6 +212,7 @@ public class KeyboardController implements KeyListener {
                 textModel.replace(caretModel.getCaretPositionAbs(), Character.toString(keyChar));
             }
             moverService.right();
+            end();
         }
 
         @Override
@@ -211,6 +221,7 @@ public class KeyboardController implements KeyListener {
                 textModel.remove(caretModel.getCaretPositionAbs() - 1, 1);
                 moverService.left();
             }
+            end();
         }
 
         @Override
@@ -218,18 +229,26 @@ public class KeyboardController implements KeyListener {
             if (caretModel.getCaretPositionAbs() < textModel.length()) {
                 textModel.remove(caretModel.getCaretPositionAbs(), 1);
             }
+            end();
+        }
+
+        public void end() {
+            otherModel.setShowSelection(false);
+            undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
         }
     }
 
     class SelectionHandler implements Handler {
         public void end() {
             otherModel.setShowSelection(false);
+            undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
         }
 
         @Override
         public void typed(char c) throws NotepadException {
             SegmentL segment = selectionModel.getSelection();
             textModel.remove(segment.getStart(), (int) (segment.getEnd() - segment.getStart()));
+            undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
             textModel.insert(segment.getStart(), Character.toString(c));
             scrollToPosition(segment.getStart());
             caretModel.goTo((int) (segment.getStart() - textWindowModel.getWindowPosition() + 1));

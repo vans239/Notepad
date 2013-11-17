@@ -24,6 +24,14 @@ public class BoundedStack<T> {
         return deque.isEmpty();
     }
 
+    @Override
+    public String toString() {
+        return "BoundedStack{" +
+                "maxElem=" + maxElem +
+                ", deque=" + deque +
+                '}';
+    }
+
     public int size() {
         return deque.size();
     }

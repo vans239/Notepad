@@ -1,7 +1,6 @@
 package notepad.text.window;
 
 import notepad.NotepadException;
-import notepad.model.OtherModel;
 import notepad.text.full.ChangeTextEvent;
 import notepad.text.full.ChangeTextListener;
 import notepad.text.full.TextModel;
@@ -9,9 +8,11 @@ import notepad.view.MonospacedLineBreakMeasurer;
 import notepad.view.TextLayoutInfo;
 import notepad.view.textlayout.SmartTextLayout;
 import org.apache.log4j.Logger;
+
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 
 /**
@@ -33,6 +34,7 @@ public class TextWindowModel extends Observable {
     private String text;
     private Dimension size;
     private ArrayList<TextLayoutInfo> layouts = new ArrayList<TextLayoutInfo>();
+    private boolean hasTextMore;
 
     public TextWindowModel(TextModel textModel) {
         this.textModel = textModel;
@@ -48,11 +50,10 @@ public class TextWindowModel extends Observable {
         });
     }
 
-    public void init(Dimension size, FontMetrics metrics, FontRenderContext frc){
-        this.size = size;
+    public void init(Dimension size, FontMetrics metrics, FontRenderContext frc) throws NotepadException {
         this.metrics = metrics;
         this.frc = frc;
-        updateMaxLength();
+        setSize(size);
     }
 
     private void updateMaxLength() {
@@ -85,15 +86,16 @@ public class TextWindowModel extends Observable {
         notifyObservers(i);
     }
 
-    public int getWindowLength(){
+    public int getWindowLength() {
         return text.length();
     }
 
     /**
-     *  last line may contains '\n'. In some cases we don't need this character.
+     * last line may contains '\n'. In some cases we don't need this character.
+     * Мы достигли конца окна, чтобы не выпрыгнуть дальше
      */
-    public int getEffectiveWindowLength(){
-        if(text.endsWith("\n")){
+    public int getEffectiveWindowLength() {
+        if (text.endsWith("\n") && hasTextMore) {
             return text.length() - 1;
         }
         return text.length();
@@ -106,10 +108,10 @@ public class TextWindowModel extends Observable {
     public int down() throws NotepadException {
         TextLayoutInfo textLayoutInfo = layouts.get(0);
         SmartTextLayout nextTextLayout = getDownTextLayout();
-        if(nextTextLayout == null){
+        if (nextTextLayout == null) {
             return -1;
         }
-        int count = textLayoutInfo.getLayout().getCharacterCount();
+        int count = textLayoutInfo.getLayout().getFullCharacterCount();
         windowPosition += count;
         updateScroll(count);
         return count;
@@ -121,10 +123,10 @@ public class TextWindowModel extends Observable {
      */
     public int up() throws NotepadException {
         SmartTextLayout prevTextLayout = getUpTextLayout();
-        if(prevTextLayout == null){
+        if (prevTextLayout == null) {
             return -1;
         }
-        int count = -prevTextLayout.getCharacterCount();
+        int count = -prevTextLayout.getFullCharacterCount();
         windowPosition += count;
         updateScroll(count);
         return count;
@@ -140,7 +142,7 @@ public class TextWindowModel extends Observable {
     }
 
     private SmartTextLayout getUpTextLayout() throws NotepadException {
-        if(getWindowPosition() == 0){
+        if (getWindowPosition() == 0) {
             return null;
         }
         long startText = Math.max(getWindowPosition() - MAX_LINE_LENGTH, 0);
@@ -164,14 +166,14 @@ public class TextWindowModel extends Observable {
             prev = textLayout;
             textLayout = stl;
         }
-        if(takePrev){
+        if (takePrev) {
             return prev;
         }
         return textLayout;
     }
 
     private SmartTextLayout getDownTextLayout() throws NotepadException {
-        if(getWindowPosition() + text.length() == textModel.length()){
+        if (!hasTextMore) {
             return null;
         }
         final String nextText = textModel.get(getWindowPosition() + text.length(),
@@ -188,18 +190,23 @@ public class TextWindowModel extends Observable {
         int x = 0;
         int y = 0;
         int position = 0;
+        hasTextMore = false;
 
         final MonospacedLineBreakMeasurer lineMeasurer =
                 new MonospacedLineBreakMeasurer(text, metrics, frc, breakWidth);
-        for (final SmartTextLayout layout : lineMeasurer) {
+        for (Iterator<SmartTextLayout> iterator = lineMeasurer.iterator(); iterator.hasNext(); ) {
+            SmartTextLayout layout = iterator.next();
             y += metrics.getHeight();
             TextLayoutInfo layoutInfo = new TextLayoutInfo(layout, new Point(x, y), position);
             layouts.add(layoutInfo);
-            position += layout.getCharacterCount();
-            if (y + metrics.getHeight() > height) {
+            position += layout.getFullCharacterCount();
+            if (y + metrics.getHeight() > height && iterator.hasNext()) {
+                hasTextMore = true;
                 break;
             }
         }
+
         text = text.substring(0, position);
+        //log.info(String.format("HasTextMore %s layouts %d", hasTextMore, layouts.size()));
     }
 }

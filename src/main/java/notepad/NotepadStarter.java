@@ -18,6 +18,7 @@ import notepad.text.full.model.ChangeableTextModel;
 import notepad.text.window.TextWindowModel;
 import notepad.view.NotepadFrame;
 import notepad.view.NotepadView;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -42,18 +43,39 @@ import java.io.IOException;
  + 9) cosmetics: не пишите в консоль так много информации - очень сложно из-за огромного ее количества отлавливать взглядом исключения
  ? 10) после большого количества действий зажал "ctrl-z" и подержал - упало исключение:
  ? 11) попробуйте набрать несколько слов, разделенных переводами строк, но без пробелов и понажимать ctrl-z - работает явно не так, как хотелось бы
- ? 12) то же самое - с ctrl-y
- + 13) usability: ctrl-y - плохое сочетание. Понимаю, что написано в readme, но, если честно, когда Вы последний раз читали readme к notepad'y? ;) Стандартное сочетание клавиш для redo - ctrl-shift-z
- 14) todo usability: наберите слово, нажмите ctrl-z, ctrl-y - каретка не на том же месте, что и в начале
-
- + 1) Segment и SegmentL - явное дублирование. Его как-то нужно убрать
- 2) Если у Вас UndoManager всегда параметризован классом Patch - зачем вообще нужна эта параметризация? Тот же вопрос - про класс Merger
- + 3) Плохая работа при добавлении в конец пустой строки!!
+ ? 12)  то же самое - с ctrl-y
+ + 14)usability: наберите слово, нажмите ctrl-z, ctrl-y - каретка не на том же месте, что и в начале
+ - 2) Если у Вас UndoManager всегда параметризован классом Patch - зачем вообще нужна эта параметризация? Тот же вопрос - про класс Merger
  + 4) буфферезирование файла в конце
+ ? 3) при долгом нажатии кнопки набирается всего 1 буква. Что странно - пробел и backspace в этом плане работают нормально
+ + 4) если набрать строчку и нажать enter - каретка не переходит на следующую строку
+ ? 5) после набора 5 строк текста зажал ctrl-z и долго держал:
+ Exception in thread "AWT-EventQueue-0" java.lang.StringIndexOutOfBoundsException: String index out of range: 20
+ at java.lang.AbstractStringBuilder.substring(AbstractStringBuilder.java:879)
+ at java.lang.StringBuilder.substring(StringBuilder.java:55)
+ at notepad.text.full.model.BufferedTextModel.get(BufferedTextModel.java:37)
+ at notepad.text.full.model.ChangeableTextModel.get(ChangeableTextModel.java:44)
+ at notepad.text.full.model.AbstractTextModel.remove(AbstractTextModel.java:48)
+ at notepad.text.full.event.InsertEvent.revert(InsertEvent.java:27)
+ at notepad.controller.KeyboardController.undoHandler(KeyboardController.java:106)
+ at notepad.controller.KeyboardController.keyPressed(KeyboardController.java:67)
+
+ + 6) я не понял, как сохранить изменения в текущем файле - то, что обычно делается шорткатом ctrl-s
+ + 7) набираю “abc”, выделяю “b", нажимаю “d” (замена), потом e. Потом 2 раза жму ctrl-z:
+    Exception in thread "AWT-EventQueue-0" java.lang.StringIndexOutOfBoundsException: String index out of range: 3
+ + 11) при выходе из приложения (крестиком или quit в меню) изменения в файле просто теряются
+ - 13) в режиме replace набор в конце строки должен работать по-другому. Посмотрите на тот же notepad
+ смотрел на sublime
+ + 14) в режиме replace невозможно добавить строчек в конец файла
+ + 15) нет скроллинга в случае, когда кsa
+ ол-во строк не помещается на экране
+ + 16) Большие траблы с ревертом (нужна 2 патча!)
  */
 
 public class NotepadStarter {
-    public static void main(String args[]) throws IOException, NotepadException {
+    private static final Logger log = Logger.getLogger(NotepadStarter.class);
+
+    public static void main(String args[]) throws IOException, NotepadException, InterruptedException {
         final FileService fileService = new FileService();
 
         final ChangeableTextModel textModel = new ChangeableTextModel();
@@ -70,13 +92,14 @@ public class NotepadStarter {
         final NotepadView view = new NotepadView(windowModel, caretModel, otherModel, selectionModel);
         final NotepadFrame gui = new NotepadFrame(view, otherModel);
 
-        final OtherController otherController = new OtherController(textModel, fileService,caretModel,windowModel,otherModel, view);
+        final OtherController otherController = new OtherController(textModel, fileService,caretModel,windowModel,otherModel, view, gui);
         final MouseController mouseController =
                 new MouseController(caretModel,selectionModel,otherModel);
         final KeyboardController keyboardController =
                 new KeyboardController(caretModel, selectionModel,otherModel,windowModel,moverService, textModel,otherController, undoManager);
 
         otherController.init();
+
         view.addMouseListener(mouseController);
         view.addMouseMotionListener(mouseController);
         view.addComponentListener(otherController.resizedAdapter);

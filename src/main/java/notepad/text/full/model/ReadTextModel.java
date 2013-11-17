@@ -8,7 +8,7 @@ import java.io.File;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class ReadTextModel extends Utf8FlushModelText {
+public class ReadTextModel extends Utf8FlushModel {
     public ReadTextModel(final File file) throws NotepadException {
         super(file);
     }

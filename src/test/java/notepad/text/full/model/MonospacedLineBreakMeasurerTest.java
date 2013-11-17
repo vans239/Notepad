@@ -54,4 +54,12 @@ public class MonospacedLineBreakMeasurerTest {
         layouts.add(new EmptyTextLayout(false, fontMetrics));
         assertLayout(new MonospacedLineBreakMeasurer("abc\n\n", fontMetrics, frc, width), layouts);
     }
+
+    @Test
+    public void smartText2(){
+        ArrayList<SmartTextLayout> layouts = new ArrayList<SmartTextLayout>();
+        layouts.add(new NonEmptyTextLayout(true, "a", FONT, frc));
+        layouts.add(new EmptyTextLayout(false, fontMetrics));
+        assertLayout(new MonospacedLineBreakMeasurer("a\n", fontMetrics, frc, width), layouts);
+    }
 }

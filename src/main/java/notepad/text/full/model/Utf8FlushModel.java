@@ -12,15 +12,15 @@ import java.util.Arrays;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class Utf8FlushModelText extends AbstractTextModel {
-    private static final Logger log = Logger.getLogger(Utf8FlushModelText.class);
+public class Utf8FlushModel extends AbstractTextModel {
+    private static final Logger log = Logger.getLogger(Utf8FlushModel.class);
     private final Charset charset = Charset.defaultCharset();
     private RandomAccessFile raf;
     private File file;
     private long length;
     private static final int DEFAULT_SIZE = 1024;
 
-    public Utf8FlushModelText(File file) throws NotepadException {
+    public Utf8FlushModel(File file) throws NotepadException {
         this.file = file;
         try {
             length = countCharsBuffer(file);

@@ -41,6 +41,8 @@ public class BufferedTextModel extends AbstractTextModel {
     public void flush(File file) throws NotepadException {
         flushBuffer();
         textModel.flush(file);
+        initBuffer(new SegmentL(0,0));
+//        log.debug("[" + get(0, (int) length()) + "]");
     }
 
     @Override
@@ -58,18 +60,21 @@ public class BufferedTextModel extends AbstractTextModel {
     public void doInsert(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.insert((int) (pos - position), s);
+//        log.debug("[" + get(0, (int) length()) + "]");
     }
 
     @Override
     public void doReplace(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.replace((int) (pos - position), (int) (pos - position + s.length()), s);
+        log.debug("[" + get(0, (int) length()) + "]");
     }
 
     @Override
     public void doRemove(long pos, int length) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + length));
         sb.delete((int) (pos - position), (int) (pos - position + length));
+//        log.debug("[" + get(0, (int) length()) + "]");
     }
 
     private void updateBuffer(SegmentL segmentL) throws NotepadException {

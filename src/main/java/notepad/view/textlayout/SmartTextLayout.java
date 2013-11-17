@@ -10,7 +10,10 @@ import java.text.AttributedCharacterIterator;
  * vans239@gmail.com
  */
 public interface SmartTextLayout extends Cloneable{
-    int getCharacterCount();
+    /**
+     * Includes \n character to this line.
+     */
+    int getFullCharacterCount();
 
     TextHitInfo hitTestChar(int x, int y);
 

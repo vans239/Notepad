@@ -1,23 +1,14 @@
 package notepad.controller;
 
-import notepad.NotepadException;
 import notepad.model.CaretModel;
 import notepad.model.OtherModel;
 import notepad.model.SelectionModel;
-import notepad.service.MoverService;
-import notepad.text.full.TextModel;
-import notepad.text.window.TextWindowModel;
-import notepad.utils.SegmentL;
-import notepad.view.TextLayoutInfo;
 import org.apache.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.font.TextHitInfo;
-import java.util.ArrayList;
 
 /**
  * Evgeny Vanslov
@@ -44,7 +35,7 @@ public class MouseController implements MouseListener, MouseMotionListener {
 
     private Point deindent(MouseEvent e) {
         Point point = e.getPoint();
-        point.translate(-otherModel.getIndent(), 0);
+        point.translate(-otherModel.getTextIndent(), 0);
         return point;
     }
 

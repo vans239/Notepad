@@ -24,11 +24,7 @@ public class NonEmptyTextLayout implements SmartTextLayout {
     private boolean isNewLine;
 
     public NonEmptyTextLayout(boolean isNewLine, String text, Font f, FontRenderContext frc) {
-       /* if (isNewLine) {
-            text = text + " ";
-        }*/
         this.isNewLine = isNewLine;
-
         this.frc = frc;
         attributedString = new AttributedString(text);
         attributedString.addAttribute(TextAttribute.FONT, f);
@@ -48,11 +44,11 @@ public class NonEmptyTextLayout implements SmartTextLayout {
 
     @Override
     public TextHitInfo hitTestChar(int x, int y) {
-        TextHitInfo textHitInfo = textLayout.hitTestChar(x + 1, y);
-        if(x <= getPoint(textHitInfo.getCharIndex()).x) {
-            return textHitInfo;
+        TextHitInfo textHitInfo = textLayout.hitTestChar(x, y);
+        if(!isNewLine && textHitInfo.getCharIndex() == textLayout.getCharacterCount() - 1 && !textHitInfo.isLeadingEdge()){
+            return TextHitInfo.trailing(textHitInfo.getCharIndex());
         }
-        return TextHitInfo.afterOffset(textHitInfo.getCharIndex() + 1);
+        return TextHitInfo.leading(textHitInfo.getCharIndex() + (textHitInfo.isLeadingEdge() ? 0 : 1));
     }
 
     @Override

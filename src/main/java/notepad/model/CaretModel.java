@@ -19,6 +19,7 @@ public class CaretModel extends Observable {
     private static final Logger log = Logger.getLogger(CaretModel.class);
     private TextWindowModel windowModel;
     private int caretPosition = 0;
+    private boolean isLeading = false;
 
     private int wantedX = 0;
 
@@ -38,12 +39,16 @@ public class CaretModel extends Observable {
         return caretPosition;
     }
 
+    public boolean isLeading(){
+        return isLeading;
+    }
+
     public long getCaretPositionAbs(){
         return caretPosition + windowModel.getWindowPosition();
     }
 
     public void goTo(final int caretPosition){
-        setCaret(caretPosition);
+        setCaret(caretPosition, true);
         updateWantedX();
     }
 
@@ -84,26 +89,30 @@ public class CaretModel extends Observable {
     }
 
     public void goToPoint(final Point point){
-        goTo(getHitIndex(point));
+        Pair<TextLayoutInfo, TextHitInfo> hitInfoPair = getHitInfoPair(point);
+        setCaret(hitInfoPair.getLeft().getPosition() + hitInfoPair.getRight().getCharIndex(), hitInfoPair.getRight().isLeadingEdge());
+        updateWantedX();
     }
 
     private void updateWantedX() {
         TextLayoutInfo caretLayout = getCaretLayout();
         Point p = caretLayout.getLayout().getPoint(caretPosition - caretLayout.getPosition());
         wantedX = p.x;
-//        log.info("WantedX: " + wantedX);
     }
 
     private void goToWantedX(TextLayoutInfo textLayoutInfo){
-        setCaret(textLayoutInfo.getPosition() + textLayoutInfo.getLayout().hitTestChar(wantedX , 0).getCharIndex());
+        TextHitInfo textHitInfo = textLayoutInfo.getLayout().hitTestChar(wantedX, 0);
+        int charIndex = textHitInfo.getCharIndex();
+        int newCaretPosition = textLayoutInfo.getPosition() + charIndex;
+        setCaret(newCaretPosition, textHitInfo.isLeadingEdge());
     }
 
     //only updates
-    private void setCaret(final int caretPosition){
-        this.caretPosition = caretPosition;
+    private void setCaret(final int caretPosition, boolean isLeading){
+        this.isLeading = isLeading;
+        this.caretPosition = caretPosition + (isLeading ? 0 : 1);
         setChanged();
         notifyObservers();
-//        log.debug("CaretPos: " + caretPosition);
     }
 
     public TextLayoutInfo getCaretLayout(){
@@ -124,11 +133,10 @@ public class CaretModel extends Observable {
     private boolean caretInThisTextLayout(TextLayoutInfo layoutInfo, boolean isLastLayout) {
         int from = layoutInfo.getPosition();
         int to = from + layoutInfo.getLayout().getFullCharacterCount() ;
-        return (caretPosition >= from && caretPosition < to)
-                || (caretPosition >= from && isLastLayout);
+        return caretPosition >= from && (caretPosition < to || (caretPosition == to && (!isLeading || isLastLayout)));
     }
 
-    private int getHitIndex(final Point clicked) {
+    private Pair<TextLayoutInfo, TextHitInfo> getHitInfoPair(final Point clicked) {
         ArrayList<TextLayoutInfo> layouts = windowModel.getLayouts();
         TextLayoutInfo nearestLayout = layouts.get(0);
         for (final TextLayoutInfo layoutInfo : layouts) {
@@ -137,7 +145,7 @@ public class CaretModel extends Observable {
             }
         }
         final TextHitInfo hitInfo = nearestLayout.getLayout().hitTestChar(clicked.x, clicked.y);
-        return nearestLayout.getPosition() + hitInfo.getInsertionIndex();
+        return Pair.of(nearestLayout, hitInfo);
     }
 
     private int distance(final TextLayoutInfo textLayoutInfo, final Point clicked) {

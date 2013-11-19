@@ -3,10 +3,14 @@ package notepad.view.textlayout;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextAttribute;
 import java.awt.font.TextHitInfo;
+import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 
 /**
  * Evgeny Vanslov
@@ -16,15 +20,24 @@ public class EmptyTextLayout implements SmartTextLayout {
     private static final Logger log = Logger.getLogger(EmptyTextLayout.class);
     private boolean isNewLine;
     private FontMetrics metrics;
+    private FontRenderContext frc;
+    private AttributedString attributedString;
 
     @Override
     public int getFullCharacterCount() {
         return isNewLine ? 1 : 0;
     }
 
-    public EmptyTextLayout(boolean isNewLine, FontMetrics metrics) {
+    public EmptyTextLayout(boolean isNewLine, FontMetrics metrics, FontRenderContext frc) {
+        this(isNewLine, metrics, frc, new AttributedString(" "));
+        attributedString.addAttribute(TextAttribute.FONT, metrics.getFont());
+    }
+
+    private EmptyTextLayout(boolean isNewLine, FontMetrics metrics, FontRenderContext frc, AttributedString attributedString) {
         this.isNewLine = isNewLine;
         this.metrics = metrics;
+        this.frc = frc;
+        this.attributedString = attributedString;
     }
 
     @Override
@@ -67,6 +80,7 @@ public class EmptyTextLayout implements SmartTextLayout {
 
     @Override
     public void draw(Graphics2D g2d, int x, int y) {
+        new TextLayout(attributedString.getIterator(), frc).draw(g2d, x, y);
     }
 
     @Override
@@ -76,11 +90,12 @@ public class EmptyTextLayout implements SmartTextLayout {
 
     @Override
     public void addAttribute(AttributedCharacterIterator.Attribute attribute, Object obj, int start, int end) {
+        attributedString.addAttribute(attribute, obj, start, end);
     }
 
     @Override
     public EmptyTextLayout clone() {
-        return this; //object is immutable
+        return new EmptyTextLayout(isNewLine, metrics, frc, new AttributedString(attributedString.getIterator()));
     }
 
     @Override

@@ -35,7 +35,7 @@ public class NonEmptyTextLayout implements SmartTextLayout {
         textLayout = new TextLayout(attributedString.getIterator(), frc);
     }
 
-    public NonEmptyTextLayout(TextLayout textLayout, AttributedString attributedString, FontRenderContext frc) {
+    private NonEmptyTextLayout(TextLayout textLayout, AttributedString attributedString, FontRenderContext frc) {
         this.textLayout = textLayout;
         this.attributedString = attributedString;
         this.frc = frc;

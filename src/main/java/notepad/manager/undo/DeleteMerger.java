@@ -4,6 +4,8 @@ import notepad.manager.Patch;
 import notepad.text.full.ChangeTextEvent;
 import notepad.text.full.event.DeleteEvent;
 
+import java.util.regex.Pattern;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -11,6 +13,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * vans239@gmail.com
  */
 public class DeleteMerger implements Merger<Patch> {
+    private static final Pattern EMPTY = Pattern.compile("[\n ]");
     @Override
     public boolean isMergeable(final Patch last,final Patch before) {
         final ChangeTextEvent lastEvent = last.getCte();
@@ -25,6 +28,9 @@ public class DeleteMerger implements Merger<Patch> {
             return false;
         }
 
+        if(EMPTY.matcher(lastDE.getDeleted()).find() || EMPTY.matcher(beforeDE.getDeleted()).find()){
+            return false;
+        }
         return lastDE.getPos() == beforeDE.getPos() || lastDE.getPos() + lastDE.getDeleted().length() == beforeDE.getPos();
     }
 

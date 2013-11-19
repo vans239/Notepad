@@ -34,15 +34,15 @@ public class MonospacedLineBreakMeasurerTest {
     @Test
     public void emptyText(){
         ArrayList<SmartTextLayout> layouts = new ArrayList<SmartTextLayout>();
-        layouts.add(new EmptyTextLayout(false, fontMetrics));
+        layouts.add(new EmptyTextLayout(false, fontMetrics,frc));
         assertLayout(new MonospacedLineBreakMeasurer("", fontMetrics, frc, width), layouts);
     }
 
     @Test
     public void emptyLinesText(){
         ArrayList<SmartTextLayout> layouts = new ArrayList<SmartTextLayout>();
-        layouts.add(new EmptyTextLayout(true, fontMetrics));
-        layouts.add(new EmptyTextLayout(false, fontMetrics));
+        layouts.add(new EmptyTextLayout(true, fontMetrics,frc));
+        layouts.add(new EmptyTextLayout(false, fontMetrics,frc));
         assertLayout(new MonospacedLineBreakMeasurer("\n", fontMetrics, frc, width), layouts);
     }
 
@@ -50,8 +50,8 @@ public class MonospacedLineBreakMeasurerTest {
     public void smartText(){
         ArrayList<SmartTextLayout> layouts = new ArrayList<SmartTextLayout>();
         layouts.add(new NonEmptyTextLayout(true, "abc", FONT, frc));
-        layouts.add(new EmptyTextLayout(true, fontMetrics));
-        layouts.add(new EmptyTextLayout(false, fontMetrics));
+        layouts.add(new EmptyTextLayout(true, fontMetrics,frc));
+        layouts.add(new EmptyTextLayout(false, fontMetrics,frc));
         assertLayout(new MonospacedLineBreakMeasurer("abc\n\n", fontMetrics, frc, width), layouts);
     }
 
@@ -59,7 +59,7 @@ public class MonospacedLineBreakMeasurerTest {
     public void smartText2(){
         ArrayList<SmartTextLayout> layouts = new ArrayList<SmartTextLayout>();
         layouts.add(new NonEmptyTextLayout(true, "a", FONT, frc));
-        layouts.add(new EmptyTextLayout(false, fontMetrics));
+        layouts.add(new EmptyTextLayout(false, fontMetrics,frc));
         assertLayout(new MonospacedLineBreakMeasurer("a\n", fontMetrics, frc, width), layouts);
     }
 }

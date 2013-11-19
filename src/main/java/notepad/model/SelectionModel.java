@@ -9,7 +9,7 @@ import java.util.Observable;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class SelectionModel extends Observable {
+public class SelectionModel{
     private static final Logger log = Logger.getLogger(SelectionModel.class);
     private long start = 0;
     private long end = 0;
@@ -27,4 +27,11 @@ public class SelectionModel extends Observable {
         this.end = end;
     }
 
+    public void unshowSelection() {
+        end = start;
+    }
+
+    public boolean isShowSelection() {
+        return start != end;
+    }
 }

@@ -15,7 +15,6 @@ import java.util.Observable;
  */
 public class OtherModel {
     private static final Logger log = Logger.getLogger(OtherModel.class);
-    private boolean isShowSelection = false;
     private boolean isEdited = false;
     private boolean isReverted = false;
     private Mode mode = Mode.INSERT;
@@ -47,9 +46,7 @@ public class OtherModel {
         return isReverted;
     }
 
-    public void setShowSelection(boolean showSelection) {
-        isShowSelection = showSelection;
-    }
+
 
     public void setEdited(boolean edited) {
         if(edited != isEdited){
@@ -65,10 +62,6 @@ public class OtherModel {
         }
     }
 
-    public boolean isShowSelection() {
-
-        return isShowSelection;
-    }
 
     public boolean isEdited() {
         return isEdited;

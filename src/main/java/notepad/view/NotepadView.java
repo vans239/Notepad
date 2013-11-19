@@ -57,12 +57,6 @@ public class NotepadView extends JPanel {
                 repaint();
             }
         });
-        selectionModel.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                repaint();
-            }
-        });
     }
 
     public FontMetrics getMetrics() {
@@ -82,7 +76,7 @@ public class NotepadView extends JPanel {
 
         g2d.translate(drawPosX, drawPosY);
         final ArrayList<TextLayoutInfo> layouts = cloneLayouts();
-        if (otherModel.isShowSelection()) {
+        if (selectionModel.isShowSelection()) {
             drawDragged(g2d, layouts);
         }
         drawLayouts(g2d, layouts);

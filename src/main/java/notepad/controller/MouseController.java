@@ -30,7 +30,7 @@ public class MouseController implements MouseListener, MouseMotionListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         caretModel.goToPoint(deindent(e));
-        otherModel.setShowSelection(false);
+        selectionModel.unshowSelection();
     }
 
     private Point deindent(MouseEvent e) {
@@ -43,7 +43,6 @@ public class MouseController implements MouseListener, MouseMotionListener {
     public void mousePressed(MouseEvent e) {
         caretModel.goToPoint(deindent(e));
         selectionModel.setStart(caretModel.getCaretPositionAbs());
-        otherModel.setShowSelection(true);
     }
 
     @Override

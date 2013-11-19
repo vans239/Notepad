@@ -119,7 +119,7 @@ public class KeyboardController implements KeyListener {
 
     private void handler(KeyEvent e) throws NotepadException {
         Handler handler;
-        if (otherModel.isShowSelection()) {
+        if (selectionModel.isShowSelection()) {
             handler = new SelectionHandler();
         } else {
             handler = new CaretHandler();
@@ -145,7 +145,7 @@ public class KeyboardController implements KeyListener {
     }
 
     private void arrows(KeyEvent e) throws NotepadException {
-        if (e.isShiftDown() && !otherModel.isShowSelection()) {
+        if (e.isShiftDown() && !selectionModel.isShowSelection()) {
             selectionModel.setStart(caretModel.getCaretPositionAbs());
         }
 
@@ -166,12 +166,8 @@ public class KeyboardController implements KeyListener {
                 return;
         }
 
-        if (e.isShiftDown() && !otherModel.isShowSelection()) {
-            otherModel.setShowSelection(true);
-
-        }
-        if(!e.isShiftDown() && otherModel.isShowSelection()){
-            otherModel.setShowSelection(false);
+        if(!e.isShiftDown() && selectionModel.isShowSelection()){
+            selectionModel.unshowSelection();
         }
 
         if (e.isShiftDown()) {
@@ -218,6 +214,9 @@ public class KeyboardController implements KeyListener {
         @Override
         public void backSpace() throws NotepadException {
             if (caretModel.getCaretPositionAbs() > 0) {
+                if(caretModel.getCaretPosition() == 0){
+                    textWindowModel.up();
+                }
                 textModel.remove(caretModel.getCaretPositionAbs() - 1, 1);
                 moverService.left();
             }
@@ -233,14 +232,14 @@ public class KeyboardController implements KeyListener {
         }
 
         public void end() {
-            otherModel.setShowSelection(false);
+            selectionModel.unshowSelection();
             undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
         }
     }
 
     class SelectionHandler implements Handler {
         public void end() {
-            otherModel.setShowSelection(false);
+            selectionModel.unshowSelection();
             undoManager.add(new Patch(patch.getContextBefore(), getContext(), patch.getCte()));
         }
 

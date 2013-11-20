@@ -67,7 +67,7 @@ public class BufferedTextModel extends AbstractTextModel {
     public void doReplace(long pos, String s) throws NotepadException {
         updateBuffer(new SegmentL(pos, pos + s.length()));
         sb.replace((int) (pos - position), (int) (pos - position + s.length()), s);
-        log.debug("[" + get(0, (int) length()) + "]");
+//        log.debug("[" + get(0, (int) length()) + "]");
     }
 
     @Override

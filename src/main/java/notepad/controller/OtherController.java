@@ -7,6 +7,8 @@ import notepad.model.CaretModel;
 import notepad.text.full.model.AbstractTextModel;
 import notepad.text.full.model.ChangeableTextModel;
 import notepad.text.window.TextWindowModel;
+import notepad.utils.observe.Observable;
+import notepad.utils.observe.Observer;
 import notepad.view.NotepadFrame;
 import notepad.view.NotepadView;
 import org.apache.log4j.Logger;
@@ -15,8 +17,6 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -78,9 +78,9 @@ public class OtherController {
         log.error("", e);
     }
 
-    public final Observer saveObserver = new Observer() {
+    public final Observer<File> saveObserver = new Observer<File>() {
         @Override
-        public void update(Observable o, Object arg) {
+        public void update(Observable<File> o, File arg) {
             try {
                 if(arg != null){
                     otherModel.setFile((File) arg);
@@ -92,9 +92,9 @@ public class OtherController {
         }
     };
 
-    public final Observer openObserver = new Observer() {
+    public final Observer<File> openObserver = new Observer<File>() {
         @Override
-        public void update(Observable o, Object arg) {
+        public void update(Observable<File> o, File arg) {
             try {
                 otherModel.setFile((File) arg);
                 open(otherModel.getFile());

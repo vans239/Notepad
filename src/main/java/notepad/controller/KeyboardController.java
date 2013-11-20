@@ -202,7 +202,7 @@ public class KeyboardController implements KeyListener {
     class CaretHandler implements Handler {
         @Override
         public void typed(char keyChar) throws NotepadException {
-            if (otherModel.getMode() == Mode.INSERT || caretModel.getCaretPositionAbs() == textModel.length()) {
+            if (otherModel.getMode() == Mode.INSERT || caretModel.getCaretPositionAbs() == textModel.length() || "\n".equals(textModel.get(caretModel.getCaretPositionAbs(), 1))) {
                 textModel.insert(caretModel.getCaretPositionAbs(), Character.toString(keyChar));
             } else {
                 textModel.replace(caretModel.getCaretPositionAbs(), Character.toString(keyChar));

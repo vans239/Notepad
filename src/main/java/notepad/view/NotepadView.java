@@ -6,6 +6,8 @@ import notepad.model.OtherModel;
 import notepad.model.SelectionModel;
 import notepad.text.window.TextWindowModel;
 import notepad.utils.SegmentL;
+import notepad.utils.observe.Observable;
+import notepad.utils.observe.Observer;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -13,8 +15,6 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Evgeny Vanslov
@@ -45,15 +45,15 @@ public class NotepadView extends JPanel {
         this.selectionModel = selectionModel;
 
 
-        windowModel.addObserver(new Observer() {
+        windowModel.addObserver(new Observer<Integer>() {
             @Override
-            public void update(Observable o, Object arg) {
+            public void update(Observable<Integer> o, Integer arg) {
                 repaint();
             }
         });
-        caretModel.addObserver(new Observer() {
+        caretModel.addObserver(new Observer<Void>() {
             @Override
-            public void update(Observable o, Object arg) {
+            public void update(Observable<Void> o, Void arg) {
                 repaint();
             }
         });

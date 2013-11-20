@@ -4,6 +4,7 @@ import notepad.NotepadException;
 import notepad.text.full.ChangeTextEvent;
 import notepad.text.full.ChangeTextListener;
 import notepad.text.full.TextModel;
+import notepad.utils.observe.ObservableImpl;
 import notepad.view.MonospacedLineBreakMeasurer;
 import notepad.view.TextLayoutInfo;
 import notepad.view.textlayout.SmartTextLayout;
@@ -13,13 +14,12 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Observable;
 
 /**
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class TextWindowModel extends Observable {
+public class TextWindowModel extends ObservableImpl<Integer> {
     private static final Logger log = Logger.getLogger(TextWindowModel.class);
     private static final int MAX_LINE_LENGTH = 500;
 
@@ -75,14 +75,12 @@ public class TextWindowModel extends Observable {
     public void update() throws NotepadException {
         text = textModel.get(windowPosition, Math.min((int) (textModel.length() - windowPosition), maxLength));
         initLayouts();
-        setChanged();
         notifyObservers();
     }
 
     public void updateScroll(int i) throws NotepadException {
         text = textModel.get(windowPosition, Math.min((int) (textModel.length() - windowPosition), maxLength));
         initLayouts();
-        setChanged();
         notifyObservers(i);
     }
 

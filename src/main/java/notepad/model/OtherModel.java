@@ -2,7 +2,7 @@ package notepad.model;
 
 import notepad.text.full.ChangeTextEvent;
 import notepad.text.full.ChangeTextListener;
-import notepad.utils.ImmediateObservable;
+import notepad.utils.observe.ObservableImpl;
 import notepad.view.Mode;
 import org.apache.log4j.Logger;
 
@@ -21,9 +21,9 @@ public class OtherModel {
     private final int textIndent = 5;
     private File file;
 
-    public final Observable swapObservable = new ImmediateObservable();
-    public final Observable isEditObservable = new ImmediateObservable();
-    public final Observable fileObservable = new ImmediateObservable();
+    public final ObservableImpl<Void> swapObservable = new ObservableImpl<Void>();
+    public final ObservableImpl<Void> isEditObservable = new ObservableImpl<Void>();
+    public final ObservableImpl<Void> fileObservable = new ObservableImpl<Void>();
 
     public File getFile() {
         return file;

@@ -1,15 +1,15 @@
 package notepad.view;
 
 import notepad.model.OtherModel;
-import notepad.utils.ImmediateObservable;
+import notepad.utils.observe.Observable;
+import notepad.utils.observe.ObservableImpl;
+import notepad.utils.observe.Observer;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
 
 public class NotepadFrame extends JFrame {
     private static final Logger log = Logger.getLogger(NotepadFrame.class);
@@ -22,9 +22,9 @@ public class NotepadFrame extends JFrame {
 
     private final OtherModel otherModel;
     private StatusBar statusBar;
-    public final ImmediateObservable saveObservable = new ImmediateObservable();
-    public final ImmediateObservable sizeObservable = new ImmediateObservable();
-    public final ImmediateObservable openObservable = new ImmediateObservable();
+    public final ObservableImpl<File> saveObservable = new ObservableImpl<File>();
+    public final ObservableImpl<Void> sizeObservable = new ObservableImpl<Void>();
+    public final ObservableImpl<File> openObservable = new ObservableImpl<File>();
 
     public NotepadFrame(NotepadView notepadView, final OtherModel otherModel) {
         this.otherModel = otherModel;
@@ -61,21 +61,21 @@ public class NotepadFrame extends JFrame {
                 repaint();
             }
         });
-        otherModel.swapObservable.addObserver(new Observer(){
+        otherModel.swapObservable.addObserver(new Observer<Void>(){
             @Override
-            public void update(Observable o, Object arg) {
+            public void update(Observable<Void> o, Void arg) {
                 statusBar.setMode(otherModel.getMode());
             }
         });
-        otherModel.isEditObservable.addObserver(new Observer() {
+        otherModel.isEditObservable.addObserver(new Observer<Void>() {
             @Override
-            public void update(Observable o, Object arg) {
+            public void update(Observable<Void> o, Void arg) {
                 setTitle(getNextTitle());
             }
         });
-        otherModel.fileObservable.addObserver(new Observer() {
+        otherModel.fileObservable.addObserver(new Observer<Void>() {
             @Override
-            public void update(Observable o, Object arg) {
+            public void update(Observable<Void> o, Void arg) {
                 setTitle(getNextTitle());
             }
         });

@@ -1,6 +1,9 @@
 package notepad.model;
 
 import notepad.text.window.TextWindowModel;
+import notepad.utils.observe.Observable;
+import notepad.utils.observe.ObservableImpl;
+import notepad.utils.observe.Observer;
 import notepad.view.TextLayoutInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
@@ -8,14 +11,12 @@ import org.apache.log4j.Logger;
 import java.awt.*;
 import java.awt.font.TextHitInfo;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class CaretModel extends Observable {
+public class CaretModel extends ObservableImpl<Void> {
     private static final Logger log = Logger.getLogger(CaretModel.class);
     private TextWindowModel windowModel;
     private int caretPosition = 0;
@@ -25,11 +26,11 @@ public class CaretModel extends Observable {
 
     public CaretModel(TextWindowModel windowModel) {
         this.windowModel = windowModel;
-        windowModel.addObserver(new Observer() {
+        windowModel.addObserver(new Observer<Integer>() {
             @Override
-            public void update(Observable o, Object arg) {
+            public void update(Observable<Integer> o, Integer arg) {
                 if(arg != null){
-                    caretPosition -= (Integer) arg;
+                    caretPosition -= arg;
                 }
             }
         });
@@ -111,7 +112,6 @@ public class CaretModel extends Observable {
     private void setCaret(final int caretPosition, boolean isLeading){
         this.isLeading = isLeading;
         this.caretPosition = caretPosition + (isLeading ? 0 : 1);
-        setChanged();
         notifyObservers();
     }
 

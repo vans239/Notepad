@@ -13,8 +13,7 @@ import java.util.Observable;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class OtherModel {
-    private static final Logger log = Logger.getLogger(OtherModel.class);
+public class DataModel {
     private boolean isEdited = false;
     private boolean isReverted = false;
     private Mode mode = Mode.INSERT;
@@ -45,8 +44,6 @@ public class OtherModel {
     public boolean isReverted() {
         return isReverted;
     }
-
-
 
     public void setEdited(boolean edited) {
         if(edited != isEdited){

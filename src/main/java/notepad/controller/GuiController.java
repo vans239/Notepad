@@ -22,8 +22,8 @@ import java.io.File;
  * Evgeny Vanslov
  * vans239@gmail.com
  */
-public class OtherController {
-    private static final Logger log = Logger.getLogger(OtherController.class);
+public class GuiController {
+    private static final Logger log = Logger.getLogger(GuiController.class);
     private final ChangeableTextModel textModel;
     private final FileService fileService;
     private final CaretModel caretModel;
@@ -33,8 +33,8 @@ public class OtherController {
     private NotepadView view; //todo ??
     private NotepadFrame frame;
 
-    public OtherController(ChangeableTextModel textModel, FileService fileService,
-                           CaretModel caretModel, TextWindowModel windowModel, OtherModel otherModel, NotepadView view, NotepadFrame frame) {
+    public GuiController(ChangeableTextModel textModel, FileService fileService,
+                         CaretModel caretModel, TextWindowModel windowModel, OtherModel otherModel, NotepadView view, NotepadFrame frame) {
         this.textModel = textModel;
         this.fileService = fileService;
         this.caretModel = caretModel;
